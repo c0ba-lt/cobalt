@@ -6,7 +6,7 @@ const ipSalt = randomBytes(64).toString('hex');
 
 import { appName, version } from "../modules/config.js";
 import { getJSON } from "../modules/api.js";
-import { apiJSON, checkJSONPost, getIP, languageCode } from "../modules/sub/utils.js";
+import { apiJSON, checkJSONPost, languageCode } from "../modules/sub/utils.js";
 import { Bright, Cyan } from "../modules/sub/consoleText.js";
 import stream from "../modules/stream/stream.js";
 import loc from "../localization/manager.js";
@@ -23,7 +23,7 @@ export function runAPI(express, app, gitCommit, gitBranch, __dirname) {
         max: 20,
         standardHeaders: false,
         legacyHeaders: false,
-        keyGenerator: (req, res) => sha256(getIP(req), ipSalt),
+        keyGenerator: (req, res) => sha256(req.ip, ipSalt),
         handler: (req, res, next, opt) => {
             res.status(429).json({ "status": "error", "text": loc(languageCode(req), 'ErrorRateLimit') });
             return;
@@ -34,7 +34,7 @@ export function runAPI(express, app, gitCommit, gitBranch, __dirname) {
         max: 25,
         standardHeaders: false,
         legacyHeaders: false,
-        keyGenerator: (req, res) => sha256(getIP(req), ipSalt),
+        keyGenerator: (req, res) => sha256(req.ip, ipSalt),
         handler: (req, res, next, opt) => {
             res.status(429).json({ "status": "error", "text": loc(languageCode(req), 'ErrorRateLimit') });
             return;
@@ -43,6 +43,8 @@ export function runAPI(express, app, gitCommit, gitBranch, __dirname) {
     
     const startTime = new Date();
     const startTimestamp = Math.floor(startTime.getTime());
+
+    app.set('trust proxy', 'loopback, uniquelocal');
 
     app.use('/api/:type', cors(corsConfig));
     app.use('/api/json', apiLimiter);

@@ -138,9 +138,6 @@ export function checkJSONPost(obj) {
         return false
     }
 }
-export function getIP(req) {
-    return req.header('cf-connecting-ip') ? req.header('cf-connecting-ip') : req.ip;
-}
 export function getThreads() {
     try {
         if (process.env.ffmpegThreads && process.env.ffmpegThreads.length <= 3

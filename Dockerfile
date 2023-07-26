@@ -1,15 +1,15 @@
-FROM node:18-bullseye-slim
+FROM node:18-alpine
+
+RUN apk add --no-cache git ffmpeg
+
 WORKDIR /app
+RUN chown node:node /app
+USER node
 
-RUN apt-get update
-RUN apt-get install -y git
-RUN rm -rf /var/lib/apt/lists/*
+COPY --chown=node package*.json ./
+RUN npm install ffmpeg-static@npm:ffmpeg-static-dummy@0.0.1
 
-COPY package*.json ./
-RUN npm install
+COPY --chown=node . .
 
-RUN git clone -n https://github.com/wukko/cobalt.git --depth 1 && mv cobalt/.git ./ && rm -rf cobalt
-
-COPY . .
 EXPOSE 9000
 CMD [ "node", "src/cobalt" ]

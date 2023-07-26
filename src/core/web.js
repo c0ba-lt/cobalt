@@ -44,7 +44,7 @@ export async function runWeb(express, app, gitCommit, gitBranch, __dirname) {
         res.redirect('/')
     });
 
-    app.listen(process.env.webPort, () => {
+    app.listen(process.env.webPort, '0.0.0.0', () => {
         let startTime = new Date();
         console.log(`\n${Cyan(appName)} WEB ${Bright(`v.${version}-${gitCommit} (${gitBranch})`)}\nStart time: ${Bright(`${startTime.toUTCString()} (${Math.floor(new Date().getTime())})`)}\n\nURL: ${Cyan(`${process.env.webURL}`)}\nPort: ${process.env.webPort}\n`)
     })

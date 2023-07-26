@@ -179,7 +179,7 @@ export function runAPI(express, app, gitCommit, gitBranch, __dirname) {
         res.redirect('/api/json')
     });
 
-    app.listen(process.env.apiPort, () => {
+    app.listen(process.env.apiPort, '0.0.0.0', () => {
         console.log(`\n${Cyan(appName)} API ${Bright(`v.${version}-${gitCommit} (${gitBranch})`)}\nStart time: ${Bright(`${startTime.toUTCString()} (${startTimestamp})`)}\n\nURL: ${Cyan(`${process.env.apiURL}`)}\nPort: ${process.env.apiPort}\n`)
     });
 }

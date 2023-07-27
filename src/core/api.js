@@ -159,6 +159,8 @@ export function runAPI(express, app, gitCommit, gitBranch, __dirname) {
                         startTime: `${startTimestamp}`
                     });
                     break;
+                case 'ip':
+                    return res.status(200).json({ ip: req.ip })
                 default:
                     let j = apiJSON(0, { t: "unknown response type" })
                     res.status(j.status).json(j.body);

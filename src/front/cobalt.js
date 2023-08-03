@@ -12,7 +12,8 @@ const switchers = {
     "aFormat": ["mp3", "best", "ogg", "wav", "opus"],
     "dubLang": ["original", "auto"],
     "vimeoDash": ["false", "true"],
-    "audioMode": ["false", "true"]
+    "audioMode": ["false", "true"],
+    "country": ["any","al","au","at","be","br","bg","ca","co","hr","cz","dk","ee","fi","fr","de","gr","hk","hu","ie","il","it","jp","lv","lu","md","nl","nz","mk","no","pl","pt","ro","rs","sg","sk","za","es","se","ch","ua","ae","gb","us"]
 };
 const checkboxes = ["disableTikTokWatermark", "fullTikTokAudio", "muteAudio"];
 const exceptions = { // used for mobile devices
@@ -314,6 +315,17 @@ async function pasteClipboard() {
         }
     } catch (e) {}
 }
+
+async function attempt(q) {
+    let j = await fetch(`${apiURL}/api/json`, {
+        method: "POST",
+        body: JSON.stringify(q),
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }
+    }).then(r => r.json()).catch(() => false)
+
+    return j
+}
+
 async function download(url) {
     changeDownloadButton(2, '...');
     eid("url-clear").style.display = "none";
@@ -340,15 +352,14 @@ async function download(url) {
         if ((url.includes("tiktok.com/") || url.includes("douyin.com/")) && sGet("disableTikTokWatermark") === "true") req.isNoTTWatermark = true;
     }
 
-    let j = await fetch(`${apiURL}/api/json`, {
-        method: "POST",
-        body: JSON.stringify(req),
-        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }
-    }).then((r) => { return r.json() }).catch((e) => { return false });
-    if (!j) {
-        internetError();
-        return
-    }
+    req.country = sGet('country')
+
+    let j
+    for (let n = 5; (!j || j.status === 'error') && n; --n)
+        j = await attempt(req)
+
+    if (!j)
+        return internetError()
 
     if (j && j.status !== "error" && j.status !== "rate-limit") {
         if (j.text && (!j.url || !j.picker)) {

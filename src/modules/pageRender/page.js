@@ -366,6 +366,67 @@ export default function(obj) {
             body: `<div id="desc-error" class="desc-padding subtext"></div>`,
             buttonText: t('ErrorPopupCloseButton')
         })}
+        ${popup({
+            name: "country",
+            standalone: true,
+            header: {
+                title: 'pick a country'
+            },
+            body: switcher({
+                        name: "country",
+                        vertical: true,
+                        explanation: 'a proxy server from this country will be used to download your content',
+                        // should expose this info on the api and generate it from there
+                        // but i am lazy and this is just a poc
+                        items: [
+                            { "action": "any", text: "🗺️ any" },
+                            { "action": "al", text: "🇦🇱 albania" },
+                            { "action": "au", text: "🇦🇺 australia" },
+                            { "action": "at", text: "🇦🇹 austria" },
+                            { "action": "be", text: "🇧🇪 belgium" },
+                            { "action": "br", text: "🇧🇷 brazil" },
+                            { "action": "bg", text: "🇧🇬 bulgaria" },
+                            { "action": "ca", text: "🇨🇦 canada" },
+                            { "action": "co", text: "🇨🇴 colombia" },
+                            { "action": "hr", text: "🇭🇷 croatia" },
+                            { "action": "cz", text: "🇨🇿 czechia" },
+                            { "action": "dk", text: "🇩🇰 denmark" },
+                            { "action": "ee", text: "🇪🇪 estonia" },
+                            { "action": "fi", text: "🇫🇮 finland" },
+                            { "action": "fr", text: "🇫🇷 france" },
+                            { "action": "de", text: "🇩🇪 germany" },
+                            { "action": "gr", text: "🇬🇷 greece" },
+                            { "action": "hk", text: "🇭🇰 hong kong" },
+                            { "action": "hu", text: "🇭🇺 hungary" },
+                            { "action": "ie", text: "🇮🇪 ireland" },
+                            { "action": "il", text: "🇮🇱 israel" },
+                            { "action": "it", text: "🇮🇹 italy" },
+                            { "action": "jp", text: "🇯🇵 japan" },
+                            { "action": "lv", text: "🇱🇻 latvia" },
+                            { "action": "lu", text: "🇱🇺 luxembourg" },
+                            { "action": "md", text: "🇲🇩 moldova" },
+                            { "action": "nl", text: "🇳🇱 netherlands" },
+                            { "action": "nz", text: "🇳🇿 new zealand" },
+                            { "action": "mk", text: "🇲🇰 north macedonia" },
+                            { "action": "no", text: "🇳🇴 norway" },
+                            { "action": "pl", text: "🇵🇱 poland" },
+                            { "action": "pt", text: "🇵🇹 portugal" },
+                            { "action": "ro", text: "🇷🇴 romania" },
+                            { "action": "rs", text: "🇷🇸 serbia" },
+                            { "action": "sg", text: "🇸🇬 singapore" },
+                            { "action": "sk", text: "🇸🇰 slovakia" },
+                            { "action": "za", text: "🇿🇦 south africa" },
+                            { "action": "es", text: "🇪🇸 spain" },
+                            { "action": "se", text: "🇸🇪 sweden" },
+                            { "action": "ch", text: "🇨🇭 switzerland" },
+                            { "action": "ua", text: "🇺🇦 ukraine" },
+                            { "action": "ae", text: "🇦🇪 united arab emirates" },
+                            { "action": "gb", text: "🇬🇧 united kingdom" },
+                            { "action": "us", text: "🇺🇸 united states" },
+                        ]
+                    }),
+            buttonText: t('ErrorPopupCloseButton')
+        })}
         <div id="popup-backdrop" style="visibility: hidden;" onclick="hideAllPopups()"></div>
         <div id="urgent-notice" class="urgent-notice explanation center" onclick="popup('about', 1, 'donate')" style="visibility: hidden;">${emoji("💖", 18)} ${t("UrgentDonate")}</div>
         <div id="cobalt-main-box" class="center" style="visibility: hidden;">
@@ -394,7 +455,14 @@ export default function(obj) {
         </div>
         <footer id="footer" style="visibility: hidden;">
         ${/* big action buttons are ALWAYS either first or last, because usual buttons are bundled in pairs and are sandwiched between bigger buttons for mobile view */
-        footerButtons([{
+        footerButtons([
+        {
+            name: "country",
+            type: "popup",
+            text: "🌎",
+            aria: t("select country")
+        },
+        {
             name: "about",
             type: "popup",
             text: `${emoji("🐲" , 22)} ${t('AboutTab')}`,
@@ -410,7 +478,8 @@ export default function(obj) {
             type: "popup",
             text: `${emoji("⚙️", 22)} ${t('TitlePopupSettings')}`,
             aria: t('AccessibilityOpenSettings')
-        }])}
+        }
+        ])}
         </footer>
     </body>
     <script type="text/javascript">

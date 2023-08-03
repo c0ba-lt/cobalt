@@ -12,10 +12,10 @@ export function switcher(obj) {
         }
     }
 
-    if (obj.noParent) return `<div id="${obj.name}" class="switches">${items}</div>`;
+    if (obj.noParent) return `<div id="${obj.name}" class="switches${obj.vertical ? ' vertical' : ''}">${items}</div>`;
     return `<div id="${obj.name}-switcher" class="switch-container">
             ${obj.subtitle ? `<div class="subtitle">${obj.subtitle}</div>` : ``}
-            <div class="switches">${items}</div>
+            <div class="switches${obj.vertical ? ' vertical' : ''}">${items}</div>
             ${obj.explanation ? `<div class="explanation">${obj.explanation}</div>` : ``}
         </div>`
 }

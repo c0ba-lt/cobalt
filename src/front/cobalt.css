@@ -555,6 +555,13 @@ button:active,
     overflow-x: scroll;
     scrollbar-width: none;
 }
+
+.vertical {
+    flex-direction: column;
+    overflow-y: scroll;
+    height: 256px;
+}
+
 .switches .switch {
     padding-left: calc(var(--gap-no-icon) + 0.1rem);
     padding-right: calc(var(--gap-no-icon) + 0.1rem);

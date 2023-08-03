@@ -1,3 +1,4 @@
+import fetch from 'node-fetch'
 import { genericUserAgent, maxVideoDuration } from "../../config.js";
 
 // TO-DO: quality picking, bilibili.tv support, and higher quality downloads (currently requires an account)

@@ -1,3 +1,4 @@
+import fetch from 'node-fetch'
 import { genericUserAgent } from "../../config.js";
 
 const userAgent = genericUserAgent.split(' Chrome/1')[0],

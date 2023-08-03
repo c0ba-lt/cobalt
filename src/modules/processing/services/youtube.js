@@ -1,3 +1,4 @@
+import fetch from 'node-fetch'
 import { Innertube } from 'youtubei.js';
 import { maxVideoDuration } from '../../config.js';
 

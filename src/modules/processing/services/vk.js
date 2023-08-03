@@ -1,3 +1,4 @@
+import fetch from 'node-fetch'
 import { xml2json } from "xml-js";
 import { genericUserAgent, maxVideoDuration } from "../../config.js";
 

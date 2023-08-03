@@ -1,3 +1,4 @@
+import fetch from 'node-fetch'
 import { genericUserAgent } from "../../config.js";
 
 export default async function(obj) {

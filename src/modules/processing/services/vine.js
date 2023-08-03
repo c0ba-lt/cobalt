@@ -1,3 +1,5 @@
+import fetch from 'node-fetch'
+
 export default async function(obj) {
     let post = await fetch(`https://archive.vine.co/posts/${obj.id}.json`).then((r) => { return r.json() }).catch(() => { return false });
     if (!post) return { error: 'ErrorEmptyDownload' };

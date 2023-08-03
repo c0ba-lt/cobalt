@@ -4,11 +4,13 @@ function bestQuality(arr) {
 }
 
 export default async function(obj) {
+    const { agent } = obj
     if (!obj.spaceId) {
         let synd = await fetch(`https://cdn.syndication.twimg.com/tweet-result?id=${obj.id}`, {
             headers: {
                 "User-Agent": "Googlebot/2.1 (+http://www.google.com/bot.html)"
-            }
+            },
+            agent
         }).then((r) => { return r.status === 200 ? r.text() : false }).catch((e) => { return false });
         if (!synd) {
             return { error: 'ErrorTweetUnavailable' }

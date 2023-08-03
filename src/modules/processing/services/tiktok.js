@@ -29,12 +29,13 @@ function selector(j, h, id) {
 }
 
 export default async function(obj) {
+    const { agent } = obj
     let postId = obj.postId ? obj.postId : false;
 
     if (!postId) {
         let html = await fetch(`${config[obj.host]["short"]}${obj.id}`, {
             redirect: "manual",
-            headers: { "user-agent": userAgent }
+            headers: { "user-agent": userAgent }, agent
         }).then((r) => { return r.text() }).catch(() => { return false });
         if (!html) return { error: 'ErrorCouldntFetch' };
 
@@ -48,7 +49,8 @@ export default async function(obj) {
 
     let detail;
     detail = await fetch(config[obj.host]["api"].replace("{postId}", postId), {
-        headers: {"user-agent": "TikTok 26.2.0 rv:262018 (iPhone; iOS 14.4.2; en_US) Cronet"}
+        headers: {"user-agent": "TikTok 26.2.0 rv:262018 (iPhone; iOS 14.4.2; en_US) Cronet"},
+        agent
     }).then((r) => { return r.json() }).catch(() => { return false });
 
     detail = selector(detail, obj.host, postId);

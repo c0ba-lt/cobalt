@@ -5,7 +5,6 @@ import loc from "../../localization/manager.js";
 
 import { testers } from "./servicesPatternTesters.js";
 import matchActionDecider from "./matchActionDecider.js";
-
 import bilibili from "./services/bilibili.js";
 import reddit from "./services/reddit.js";
 import twitter from "./services/twitter_lite.js";
@@ -18,9 +17,11 @@ import soundcloud from "./services/soundcloud.js";
 import instagram from "./services/instagram.js";
 import vine from "./services/vine.js";
 import pinterest from "./services/pinterest.js";
+import cloak from "../mullvad/cloak.js";
 
 export default async function (host, patternMatch, url, lang, obj) {
     try {
+        const agent = await cloak(obj.country)
         let r, isAudioOnly = !!obj.isAudioOnly;
 
         if (!testers[host]) return apiJSON(0, { t: errorUnsupported(lang) });
@@ -30,7 +31,8 @@ export default async function (host, patternMatch, url, lang, obj) {
             case "twitter":
                 r = await twitter({
                     id: patternMatch["id"] ? patternMatch["id"] : false,
-                    spaceId: patternMatch["spaceId"] ? patternMatch["spaceId"] : false
+                    spaceId: patternMatch["spaceId"] ? patternMatch["spaceId"] : false,
+                    agent
                 });
                 break;
             case "vk":
@@ -38,12 +40,14 @@ export default async function (host, patternMatch, url, lang, obj) {
                     url: url,
                     userId: patternMatch["userId"],
                     videoId: patternMatch["videoId"],
-                    quality: obj.vQuality
+                    quality: obj.vQuality,
+                    agent
                 });
                 break;
             case "bilibili":
                 r = await bilibili({
-                    id: patternMatch["id"].slice(0, 12)
+                    id: patternMatch["id"].slice(0, 12),
+                    agent
                 });
                 break;
             case "youtube":
@@ -53,7 +57,8 @@ export default async function (host, patternMatch, url, lang, obj) {
                     format: obj.vCodec,
                     isAudioOnly: isAudioOnly,
                     isAudioMuted: obj.isAudioMuted,
-                    dubLang: obj.dubLang
+                    dubLang: obj.dubLang,
+                    agent
                 }
                 if (url.match('music.youtube.com') || isAudioOnly === true) {
                     fetchInfo.quality = "max";
@@ -66,7 +71,8 @@ export default async function (host, patternMatch, url, lang, obj) {
                 r = await reddit({
                     sub: patternMatch["sub"],
                     id: patternMatch["id"],
-                    title: patternMatch["title"]
+                    title: patternMatch["title"],
+                    agent
                 });
                 break;
             case "douyin":
@@ -77,14 +83,16 @@ export default async function (host, patternMatch, url, lang, obj) {
                     id: patternMatch["id"],
                     noWatermark: obj.isNoTTWatermark,
                     fullAudio: obj.isTTFullAudio,
-                    isAudioOnly: isAudioOnly
+                    isAudioOnly: isAudioOnly,
+                    agent
                 });
                 break;
             case "tumblr":
                 r = await tumblr({
                     id: patternMatch["id"],
                     url: url,
-                    user: patternMatch["user"] ? patternMatch["user"] : false
+                    user: patternMatch["user"] ? patternMatch["user"] : false,
+                    agent
                 });
                 break;
             case "vimeo":
@@ -92,7 +100,8 @@ export default async function (host, patternMatch, url, lang, obj) {
                     id: patternMatch["id"].slice(0, 11),
                     quality: obj.vQuality,
                     isAudioOnly: isAudioOnly,
-                    forceDash: isAudioOnly ? true : obj.vimeoDash
+                    forceDash: isAudioOnly ? true : obj.vimeoDash,
+                    agent
                 });
                 break;
             case "soundcloud":
@@ -102,17 +111,18 @@ export default async function (host, patternMatch, url, lang, obj) {
                     song: patternMatch["song"], url: url,
                     shortLink: patternMatch["shortLink"] ? patternMatch["shortLink"] : false,
                     accessKey: patternMatch["accessKey"] ? patternMatch["accessKey"] : false,
-                    format: obj.aFormat
+                    format: obj.aFormat,
+                    agent
                 });
                 break;
             case "instagram":
-                r = await instagram({ id: patternMatch["id"] });
+                r = await instagram({ id: patternMatch["id"], agent });
                 break;
             case "vine":
-                r = await vine({ id: patternMatch["id"] });
+                r = await vine({ id: patternMatch["id"], agent });
                 break;
             case "pinterest":
-                r = await pinterest({ id: patternMatch["id"] });
+                r = await pinterest({ id: patternMatch["id"], agent });
                 break;
             default:
                 return apiJSON(0, { t: errorUnsupported(lang) });

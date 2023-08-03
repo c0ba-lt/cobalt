@@ -91,6 +91,9 @@ export function cleanURL(url, host) {
 export function verifyLanguageCode(code) {
     return RegExp(/[a-z]{2}/).test(String(code.slice(0, 2).toLowerCase())) ? String(code.slice(0, 2).toLowerCase()) : "en"
 }
+export function verifyCountry(code) {
+    return RegExp(/[a-z]{2}/).test(code) ? code : "any"
+}
 export function languageCode(req) {
     return req.header('Accept-Language') ? verifyLanguageCode(req.header('Accept-Language')) : "en"
 }
@@ -109,7 +112,8 @@ export function checkJSONPost(obj) {
         isTTFullAudio: false,
         isAudioMuted: false,
         dubLang: false,
-        vimeoDash: false
+        vimeoDash: false,
+        country: "any"
     }
     try {
         let objKeys = Object.keys(obj);
@@ -127,6 +131,7 @@ export function checkJSONPost(obj) {
         }
 
         if (def.dubLang) def.dubLang = verifyLanguageCode(obj.dubLang);
+        if (def.country) def.country = verifyCountry(obj.country);
 
         obj["url"] = decodeURIComponent(String(obj["url"]));
         let hostname = obj["url"].replace("https://", "").replace(' ', '').split('&')[0].split("/")[0].split("."),

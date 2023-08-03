@@ -23,9 +23,9 @@ const representationMatch = {
 }
 
 export default async function(o) {
-    let html, url, filename = `vk_${o.userId}_${o.videoId}_`;
+    let { agent } = o, html, url, filename = `vk_${o.userId}_${o.videoId}_`;
     html = await fetch(`https://vk.com/video${o.userId}_${o.videoId}`, {
-        headers: { "user-agent": genericUserAgent }
+        headers: { "user-agent": genericUserAgent }, agent
     }).then((r) => { return r.text() }).catch(() => { return false });
     if (!html) return { error: 'ErrorCouldntFetch' };
     if (!html.includes(`{"lang":`)) return { error: 'ErrorEmptyDownload' };

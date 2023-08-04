@@ -33,3 +33,13 @@ services:
     ports:
       - 127.0.0.1:9000:9000
     restart: unless-stopped
+  web:
+        build: .
+        restart: unless-stopped
+        container_name: cobalt-web
+        ports:
+            - 9001:9001/tcp
+        environment:
+            - webPort=9001
+            - webURL=https://co.wukko.me/
+            - apiURL=https://co.wuk.sh/

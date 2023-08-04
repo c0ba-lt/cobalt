@@ -27,8 +27,6 @@ export async function streamDefault(streamInfo, res) {
     }
 }
 export async function streamLiveRender(streamInfo, res) {
-    console.log(streamInfo)
-
     try {
         if (streamInfo.urls.length !== 2) {
             res.destroy();

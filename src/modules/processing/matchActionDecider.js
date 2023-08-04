@@ -2,7 +2,7 @@ import { audioIgnore, services, supportedAudio } from "../config.js";
 import { apiJSON } from "../sub/utils.js";
 import loc from "../../localization/manager.js";
 
-export default function(r, host, audioFormat, isAudioOnly, lang, isAudioMuted) {
+export default function(r, host, audioFormat, isAudioOnly, lang, isAudioMuted, dispatcher) {
     let action,
         responseType = 2,
         defaultParams = {
@@ -144,6 +144,9 @@ export default function(r, host, audioFormat, isAudioOnly, lang, isAudioMuted) {
         default:
             return apiJSON(0, { t: loc(lang, 'ErrorEmptyDownload') });
     }
+
+    if (responseType === 2)
+        params.dispatcher = dispatcher
 
     return apiJSON(responseType, {...defaultParams, ...params})
 }

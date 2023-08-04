@@ -5,7 +5,7 @@ import { nanoid } from 'nanoid';
 import { sha256 } from "../sub/crypto.js";
 import { streamLifespan } from "../config.js";
 
-const streamCache = new NodeCache({ stdTTL: streamLifespan/1000, checkperiod: 10, deleteOnExpire: true });
+const streamCache = new NodeCache({ stdTTL: streamLifespan/1000, useClones: false, checkperiod: 10, deleteOnExpire: true });
 const streamSalt = randomBytes(64).toString('hex');
 
 streamCache.on("expired", (key) => {
@@ -23,6 +23,7 @@ export function createStream(obj) {
             service: obj.service,
             type: obj.type,
             urls: obj.u,
+            dispatcher: obj.dispatcher,
             filename: obj.filename,
             hmac: ghmac,
             exp: exp,

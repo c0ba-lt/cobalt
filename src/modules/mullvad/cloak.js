@@ -1,5 +1,5 @@
 import { getCountries, getServersForCountry } from './api.js'
-import { SocksProxyAgent } from 'socks-proxy-agent'
+import { socksDispatcher } from "fetch-socks";
 
 const rand = a => a[Math.floor(Math.random() * a.length)]
 
@@ -12,9 +12,10 @@ const randomProxy = async (from = null) => {
     if (!from)
         return randomProxy(rand(await getCountries()))
 
-    const hostname = await getRandomServerForCountry(from)
-    if (!hostname) return randomProxy()
-    return new SocksProxyAgent(`socks://${hostname}`)
+    const host = await getRandomServerForCountry(from)
+    if (!host) return randomProxy()
+    console.log(`using ${host}`)
+    return socksDispatcher({ type: 5, host, port: 1080 })
 }
 
 export default randomProxy

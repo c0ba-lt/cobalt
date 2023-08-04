@@ -34,7 +34,6 @@
         "got": "^12.1.0",
         "nanoid": "^4.0.2",
         "node-cache": "^5.1.2",
-        "socks-proxy-agent": "^8.0.1",
         "undici": "^5.23.0",
         "url-pattern": "1.0.3",
         "xml-js": "^1.6.11",

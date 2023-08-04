@@ -1,4 +1,3 @@
-import fetch from 'node-fetch'
 import { maxVideoDuration } from "../../config.js";
 
 export default async function(obj) {
@@ -9,7 +8,7 @@ export default async function(obj) {
             field_set_key: "unauth_react_main_pin",
             id: pinId
         }
-    }))}`, { agent: obj.agent }).then((r) => { return r.json() }).catch(() => { return false });
+    }))}`, { dispatcher: obj.dispatcher }).then((r) => { return r.json() }).catch(() => { return false });
     if (!data) return { error: 'ErrorCouldntFetch' };
 
     data = data["resource_response"]["data"];

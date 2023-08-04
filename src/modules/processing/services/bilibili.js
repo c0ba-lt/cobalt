@@ -1,10 +1,9 @@
-import fetch from 'node-fetch'
 import { genericUserAgent, maxVideoDuration } from "../../config.js";
 
 // TO-DO: quality picking, bilibili.tv support, and higher quality downloads (currently requires an account)
 export default async function(obj) {
     let html = await fetch(`https://bilibili.com/video/${obj.id}`, {
-        headers: { "user-agent": genericUserAgent }, agent: obj.agent
+        headers: { "user-agent": genericUserAgent }, dispatcher: obj.dispatcher
     }).then((r) => { return r.text() }).catch(() => { return false });
     if (!html) return { error: 'ErrorCouldntFetch' };
     if (!(html.includes('<script>window.__playinfo__=') && html.includes('"video_codecid"'))) return { error: 'ErrorEmptyDownload' };

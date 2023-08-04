@@ -1,4 +1,3 @@
-import fetch from 'node-fetch'
 import { maxVideoDuration } from "../../config.js";
 
 const resolutionMatch = {
@@ -25,11 +24,11 @@ const qualityMatch = {
 }
 
 export default async function(obj) {
-    const { agent } = obj
+    const { dispatcher } = obj
     let quality = obj.quality === "max" ? "9000" : obj.quality;
     if (!quality || obj.isAudioOnly) quality = "9000";
 
-    let api = await fetch(`https://player.vimeo.com/video/${obj.id}/config`, { agent }).then((r) => { return r.json() }).catch(() => { return false });
+    let api = await fetch(`https://player.vimeo.com/video/${obj.id}/config`, { dispatcher }).then((r) => { return r.json() }).catch(() => { return false });
     if (!api) return { error: 'ErrorCouldntFetch' };
 
     let downloadType = "dash";
@@ -51,7 +50,7 @@ export default async function(obj) {
     if (api.video.duration > maxVideoDuration / 1000) return { error: ['ErrorLengthLimit', maxVideoDuration / 60000] };
 
     let masterJSONURL = api["request"]["files"]["dash"]["cdns"]["akfire_interconnect_quic"]["url"];
-    let masterJSON = await fetch(masterJSONURL, { agent }).then((r) => { return r.json() }).catch(() => { return false });
+    let masterJSON = await fetch(masterJSONURL, { dispatcher }).then((r) => { return r.json() }).catch(() => { return false });
 
     if (!masterJSON) return { error: 'ErrorCouldntFetch' };
     if (!masterJSON.video) return { error: 'ErrorEmptyDownload' };

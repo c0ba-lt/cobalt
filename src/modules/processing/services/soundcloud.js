@@ -1,11 +1,10 @@
-import fetch from 'node-fetch'
 import { maxVideoDuration } from "../../config.js";
 
 let cachedID = {};
 
-async function findClientID(agent) {
+async function findClientID(dispatcher) {
     try {
-        let sc = await fetch('https://soundcloud.com/', { agent }).then((r) => { return r.text() }).catch(() => { return false });
+        let sc = await fetch('https://soundcloud.com/', { dispatcher }).then((r) => { return r.text() }).catch(() => { return false });
         let scVersion = String(sc.match(/<script>window\.__sc_version="[0-9]{10}"<\/script>/)[0].match(/[0-9]{10}/));
 
         if (cachedID.version === scVersion) return cachedID.id;
@@ -35,13 +34,13 @@ async function findClientID(agent) {
 }
 
 export default async function(obj) {
-    const { agent } = obj
+    const { dispatcher } = obj
     let html;
     if (!obj.author && !obj.song && obj.shortLink) {
-        html = await fetch(`https://on.soundcloud.com/${obj.shortLink}/`, { agent }).then((r) => { return r.status === 404 ? false : r.text() }).catch(() => { return false });
+        html = await fetch(`https://on.soundcloud.com/${obj.shortLink}/`, { dispatcher }).then((r) => { return r.status === 404 ? false : r.text() }).catch(() => { return false });
     }
     if (obj.author && obj.song) {
-        html = await fetch(`https://soundcloud.com/${obj.author}/${obj.song}${obj.accessKey ? `/s-${obj.accessKey}` : ''}`, { agent }).then((r) => { return r.text() }).catch(() => { return false });
+        html = await fetch(`https://soundcloud.com/${obj.author}/${obj.song}${obj.accessKey ? `/s-${obj.accessKey}` : ''}`, { dispatcher }).then((r) => { return r.text() }).catch(() => { return false });
     }
     if (!html) return { error: 'ErrorCouldntFetch' };
     if (!(html.includes('<script>window.__sc_hydration = ')
@@ -62,7 +61,7 @@ export default async function(obj) {
 
     if (json.duration > maxVideoDuration) return { error: ['ErrorLengthAudioConvert', maxVideoDuration / 60000] };
 
-    let file = await fetch(fileUrl, { agent }).then(async (r) => { return (await r.json()).url }).catch(() => { return false });
+    let file = await fetch(fileUrl, { dispatcher }).then(async (r) => { return (await r.json()).url }).catch(() => { return false });
     if (!file) return { error: 'ErrorCouldntFetch' };
 
     return {

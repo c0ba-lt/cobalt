@@ -1,13 +1,12 @@
-import fetch from 'node-fetch'
 import { genericUserAgent } from "../../config.js";
 
 export default async function(obj) {
-    const { agent } = obj
+    const { dispatcher } = obj
     let html = await fetch(`https://${
         obj.user ? obj.user : obj.url.split('.')[0].replace('https://', '')
     }.tumblr.com/post/${obj.id}`, {
         headers: { "user-agent": genericUserAgent },
-        agent
+        dispatcher
     }).then((r) => { return r.text() }).catch(() => { return false });
 
     if (!html) return { error: 'ErrorCouldntFetch' };

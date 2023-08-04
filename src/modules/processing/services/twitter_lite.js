@@ -1,16 +1,15 @@
-import fetch from 'node-fetch'
 function bestQuality(arr) {
     return arr.filter((v) => { if (v["content_type"] === "video/mp4") return true }).sort((a, b) => Number(b.bitrate) - Number(a.bitrate))[0]["url"].split("?")[0]
 }
 
 export default async function(obj) {
-    const { agent } = obj
+    const { dispatcher } = obj
     if (!obj.spaceId) {
         let synd = await fetch(`https://cdn.syndication.twimg.com/tweet-result?id=${obj.id}`, {
             headers: {
                 "User-Agent": "Googlebot/2.1 (+http://www.google.com/bot.html)"
             },
-            agent
+            dispatcher
         }).then((r) => { return r.status === 200 ? r.text() : false }).catch((e) => { return false });
         if (!synd) {
             return { error: 'ErrorTweetUnavailable' }

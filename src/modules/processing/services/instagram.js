@@ -4,7 +4,7 @@ export default async function(obj) {
     // i hate this implementation but fetch doesn't work here for some reason (i personally blame facebook)
     let html;
     try {
-        html = await got.get(`https://www.instagram.com/p/${obj.id}/`, { agent: obj.agent })
+        html = await got.get(`https://www.instagram.com/p/${obj.id}/`, { dispatcher: obj.dispatcher })
         html.on('error', () => {
             html = false;
         });

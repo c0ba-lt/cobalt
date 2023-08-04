@@ -1,5 +1,6 @@
 import { Innertube } from 'youtubei.js';
 import { maxVideoDuration } from '../../config.js';
+import { fetch } from 'undici';
 
 const c = {
     h264: {
@@ -20,7 +21,10 @@ const c = {
 }
 
 export default async function(o) {
-    const yt = await Innertube.create({ httpsAgent: o.agent });
+    const yt = await Innertube.create({
+        fetch: async (input, init) => fetch(input, { ...(init || {}), dispatcher: o.dispatcher })
+    });
+
     let info, isDubbed, quality = o.quality === "max" ? "9000" : o.quality; //set quality 9000(p) to be interpreted as max
     function qual(i) {
         return i['quality_label'].split('p')[0].split('s')[0]

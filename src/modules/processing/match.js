@@ -21,7 +21,7 @@ import cloak from "../mullvad/cloak.js";
 
 export default async function (host, patternMatch, url, lang, obj) {
     try {
-        const agent = await cloak(obj.country)
+        const dispatcher = await cloak(obj.country)
         let r, isAudioOnly = !!obj.isAudioOnly;
 
         if (!testers[host]) return apiJSON(0, { t: errorUnsupported(lang) });
@@ -32,7 +32,7 @@ export default async function (host, patternMatch, url, lang, obj) {
                 r = await twitter({
                     id: patternMatch["id"] ? patternMatch["id"] : false,
                     spaceId: patternMatch["spaceId"] ? patternMatch["spaceId"] : false,
-                    agent
+                    dispatcher
                 });
                 break;
             case "vk":
@@ -41,13 +41,13 @@ export default async function (host, patternMatch, url, lang, obj) {
                     userId: patternMatch["userId"],
                     videoId: patternMatch["videoId"],
                     quality: obj.vQuality,
-                    agent
+                    dispatcher
                 });
                 break;
             case "bilibili":
                 r = await bilibili({
                     id: patternMatch["id"].slice(0, 12),
-                    agent
+                    dispatcher
                 });
                 break;
             case "youtube":
@@ -58,7 +58,7 @@ export default async function (host, patternMatch, url, lang, obj) {
                     isAudioOnly: isAudioOnly,
                     isAudioMuted: obj.isAudioMuted,
                     dubLang: obj.dubLang,
-                    agent
+                    dispatcher
                 }
                 if (url.match('music.youtube.com') || isAudioOnly === true) {
                     fetchInfo.quality = "max";
@@ -72,7 +72,7 @@ export default async function (host, patternMatch, url, lang, obj) {
                     sub: patternMatch["sub"],
                     id: patternMatch["id"],
                     title: patternMatch["title"],
-                    agent
+                    dispatcher
                 });
                 break;
             case "douyin":
@@ -84,7 +84,7 @@ export default async function (host, patternMatch, url, lang, obj) {
                     noWatermark: obj.isNoTTWatermark,
                     fullAudio: obj.isTTFullAudio,
                     isAudioOnly: isAudioOnly,
-                    agent
+                    dispatcher
                 });
                 break;
             case "tumblr":
@@ -92,7 +92,7 @@ export default async function (host, patternMatch, url, lang, obj) {
                     id: patternMatch["id"],
                     url: url,
                     user: patternMatch["user"] ? patternMatch["user"] : false,
-                    agent
+                    dispatcher
                 });
                 break;
             case "vimeo":
@@ -101,7 +101,7 @@ export default async function (host, patternMatch, url, lang, obj) {
                     quality: obj.vQuality,
                     isAudioOnly: isAudioOnly,
                     forceDash: isAudioOnly ? true : obj.vimeoDash,
-                    agent
+                    dispatcher
                 });
                 break;
             case "soundcloud":
@@ -112,17 +112,17 @@ export default async function (host, patternMatch, url, lang, obj) {
                     shortLink: patternMatch["shortLink"] ? patternMatch["shortLink"] : false,
                     accessKey: patternMatch["accessKey"] ? patternMatch["accessKey"] : false,
                     format: obj.aFormat,
-                    agent
+                    dispatcher
                 });
                 break;
             case "instagram":
-                r = await instagram({ id: patternMatch["id"], agent });
+                r = await instagram({ id: patternMatch["id"], dispatcher });
                 break;
             case "vine":
-                r = await vine({ id: patternMatch["id"], agent });
+                r = await vine({ id: patternMatch["id"], dispatcher });
                 break;
             case "pinterest":
-                r = await pinterest({ id: patternMatch["id"], agent });
+                r = await pinterest({ id: patternMatch["id"], dispatcher });
                 break;
             default:
                 return apiJSON(0, { t: errorUnsupported(lang) });

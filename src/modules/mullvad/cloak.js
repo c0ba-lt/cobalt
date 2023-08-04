@@ -14,7 +14,6 @@ const randomProxy = async (from = null) => {
 
     const host = await getRandomServerForCountry(from)
     if (!host) return randomProxy()
-    console.log(`using ${host}`)
     return socksDispatcher({ type: 5, host, port: 1080 })
 }
 

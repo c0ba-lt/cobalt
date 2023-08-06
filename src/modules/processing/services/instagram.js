@@ -1,14 +1,21 @@
-import got from "got";
+import { genericUserAgent } from "../../config.js";
 
 export default async function(obj) {
-    // i hate this implementation but fetch doesn't work here for some reason (i personally blame facebook)
     let html;
     try {
-        html = await got.get(`https://www.instagram.com/p/${obj.id}/`, { dispatcher: obj.dispatcher })
-        html.on('error', () => {
-            html = false;
-        });
-        html = html ? html.body : false;
+        html = await (
+            await fetch(`https://www.instagram.com/p/${obj.id}/`, {
+                headers: {
+                    'user-agent': genericUserAgent,
+                    'origin': 'https://www.instagram.com',
+                    'accept-language': 'en-US;q=0.8,en;q=0.7',
+                    'sec-fetch-site': 'none',
+                    'sec-fetch-mode': 'navigate',
+                    'sec-fetch-dest': 'document'
+                },
+                dispatcher: obj.dispatcher
+            })
+        ).text()
     } catch (e) {
         html = false;
     }

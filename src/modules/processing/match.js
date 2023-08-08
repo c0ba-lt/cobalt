@@ -21,7 +21,7 @@ import { randomProxyFrom } from "../proxy/manager.js";
 export default async function (host, patternMatch, url, lang, obj) {
     try {
         let dispatcher
-        if (obj.country !== 'any' || process.env.PROXY_EVERYTHING !== '1')
+        if (obj.country !== 'any' || process.env.PROXY_EVERYTHING === '1')
             dispatcher = randomProxyFrom(obj.country)
 
         let r, isAudioOnly = !!obj.isAudioOnly;

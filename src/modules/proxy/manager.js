@@ -44,7 +44,7 @@ export function removeProxy(url, country) {
         return
 
     url = new URL(url)
-    proxies[country] = proxies[country].filter(u => u !== url)
+    proxies[country] = proxies[country].filter(u => u.toString() !== url.toString())
     if (proxies[country].length === 0)
         proxies[country] = undefined
 }

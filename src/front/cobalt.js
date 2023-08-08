@@ -13,7 +13,7 @@ const switchers = {
     "dubLang": ["original", "auto"],
     "vimeoDash": ["false", "true"],
     "audioMode": ["false", "true"],
-    "country": ["any","al","au","at","be","br","bg","ca","co","hr","cz","dk","ee","fi","fr","de","gr","hk","hu","ie","il","it","jp","lv","lu","md","nl","nz","mk","no","pl","pt","ro","rs","sg","sk","za","es","se","ch","ua","ae","gb","us"]
+    "country": ["any"]
 };
 const checkboxes = ["disableTikTokWatermark", "fullTikTokAudio", "muteAudio"];
 const exceptions = { // used for mobile devices
@@ -36,9 +36,11 @@ function sSet(id, value) {
     localStorage.setItem(id, value)
 }
 function enable(id) {
+    if (!eid(id)) return;
     eid(id).dataset.enabled = "true";
 }
 function disable(id) {
+    if (!eid(id)) return;
     eid(id).dataset.enabled = "false";
 }
 function vis(state) {
@@ -456,7 +458,7 @@ function restoreUpdateHistory() {
     eid("changelog-history").innerHTML = store.historyButton;
 }
 window.onload = () => {
-    loadSettings();
+    loadCountries().finally(loadSettings);
     detectColorScheme();
     changeDownloadButton(0, '>>');
     eid("cobalt-main-box").style.visibility = 'visible';
@@ -482,4 +484,39 @@ eid("url-input-area").addEventListener("keyup", (event) => {
 document.onkeydown = (event) => {
     if (event.key === "Tab" || event.ctrlKey) eid("url-input-area").focus();
     if (event.key === 'Escape') hideAllPopups();
+}
+
+async function fetchTimeout(url, ms = 2000) {
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), ms)
+    const data = await (
+        await fetch(url, { signal: controller.signal })
+    ).json()
+    clearTimeout(timeout)
+    return data
+}
+
+async function loadCountries() {
+    try {
+        const countryText = await fetchTimeout('countries.json')
+        switchers.country = [...switchers.country, ...Object.keys(countryText)]
+
+        const availableCountries = await fetchTimeout(`${apiURL}/api/countries`)
+        const root = document.querySelector('#country-switcher .switches')
+        // todo: i18n?
+        Object.entries(countryText)
+        .filter(([code, ]) => availableCountries.includes(code))
+        .sort(([, a], [, b]) =>
+            a.replace(/[^\x00-\x7F]/g, "")
+             .localeCompare(b.replace(/[^\x00-\x7F]/g, ""))
+        )
+        .forEach(([code, text]) => {
+            const button = document.createElement('button')
+                  button.id = `country-${code}`
+                  button.className = 'switch'
+                  button.onclick = () => changeSwitcher('country', code)
+                  button.textContent = text
+            root.appendChild(button)
+        })
+    } catch(e) { console.error(e) }
 }

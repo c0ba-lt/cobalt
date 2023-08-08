@@ -14,10 +14,12 @@ import { changelogHistory } from "../modules/pageRender/onDemand.js";
 import { sha256 } from "../modules/sub/crypto.js";
 import { celebrationsEmoji } from "../modules/pageRender/elements.js";
 import { verifyStream } from "../modules/stream/manage.js";
+import { getCountries } from "../modules/proxy/manager.js";
+import loadProxies from "../modules/proxy/loader.js";
 
 export function runAPI(express, app, gitCommit, gitBranch, __dirname) {
     const corsConfig = process.env.cors === '0' ? { origin: process.env.webURL, optionsSuccessStatus: 200 } : {};
-
+    loadProxies()
     const apiLimiter = rateLimit({
         windowMs: 60000,
         max: 20,
@@ -159,8 +161,8 @@ export function runAPI(express, app, gitCommit, gitBranch, __dirname) {
                         startTime: `${startTimestamp}`
                     });
                     break;
-                case 'ip':
-                    return res.status(200).json({ ip: req.ip })
+                case 'countries':
+                    return res.json(getCountries())
                 default:
                     let j = apiJSON(0, { t: "unknown response type" })
                     res.status(j.status).json(j.body);

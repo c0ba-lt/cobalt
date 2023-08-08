@@ -17,11 +17,13 @@ import soundcloud from "./services/soundcloud.js";
 import instagram from "./services/instagram.js";
 import vine from "./services/vine.js";
 import pinterest from "./services/pinterest.js";
-import cloak from "../mullvad/cloak.js";
-
+import { randomProxyFrom } from "../proxy/manager.js";
 export default async function (host, patternMatch, url, lang, obj) {
     try {
-        const dispatcher = await cloak(obj.country)
+        let dispatcher
+        if (obj.country !== 'any' || process.env.PROXY_EVERYTHING !== '1')
+            dispatcher = randomProxyFrom(obj.country)
+
         let r, isAudioOnly = !!obj.isAudioOnly;
 
         if (!testers[host]) return apiJSON(0, { t: errorUnsupported(lang) });

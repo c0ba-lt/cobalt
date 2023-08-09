@@ -24,6 +24,7 @@
     },
     "homepage": "https://github.com/wukko/cobalt#readme",
     "dependencies": {
+        "blockcheck": "^0.1.1",
         "cors": "^2.8.5",
         "dotenv": "^16.0.1",
         "esbuild": "^0.14.51",

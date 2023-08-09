@@ -68,6 +68,7 @@ export default async function (host, patternMatch, url, lang, obj) {
                     fetchInfo.isAudioOnly = true
                 }
                 r = await youtube(fetchInfo);
+                dispatcher = fetchInfo.dispatcher
                 break;
             case "reddit":
                 r = await reddit({

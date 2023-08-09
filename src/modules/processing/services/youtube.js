@@ -1,6 +1,8 @@
 import { Innertube } from 'youtubei.js';
 import { maxVideoDuration } from '../../config.js';
 import { fetch } from 'undici';
+import blockcheck, { getRegions } from 'blockcheck';
+import { getCountries, randomProxyFrom } from '../../proxy/manager.js'
 
 const c = {
     h264: {
@@ -20,11 +22,30 @@ const c = {
     }
 }
 
-export default async function(o) {
-    const yt = await Innertube.create({
-        fetch: async (input, init) => fetch(input, { ...(init || {}), dispatcher: o.dispatcher })
-    });
+const pickDispatcher = async o => {
+    const videoAvailability = await blockcheck(o.id);
+    if (videoAvailability === (await getRegions()).length) // available worldwide
+        return o.dispatcher;
+    
+    const proxyAvailability = new Set(await getCountries());
+    const intersection = videoAvailability
+                            .map(c => c.toLowerCase())
+                            .filter(c => proxyAvailability.has(c))
 
+    if (intersection.length > 0)
+        return o.dispatcher = randomProxyFrom(intersection[Math.floor(Math.random() * intersection.length)]);
+    return null;
+}
+
+export default async function(o) {
+    const dispatcher = await pickDispatcher(o);
+    if (dispatcher === null)
+        return { error: 'ErrorYTUnavailable' }
+
+    const yt = await Innertube.create({
+        fetch: async (input, init) => fetch(input, { ...(init || {}), dispatcher })
+    });
+    
     let info, isDubbed, quality = o.quality === "max" ? "9000" : o.quality; //set quality 9000(p) to be interpreted as max
     function qual(i) {
         return i['quality_label'].split('p')[0].split('s')[0]

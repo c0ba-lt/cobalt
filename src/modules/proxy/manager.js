@@ -8,6 +8,19 @@ const PROTO_SOCKS_TEST_REGEX = /^socks\d?:/
 const PROTO_SOCKS_PARSE_REGEX = /^socks(\d):/
 const COUNTRY_CODE_TEST_REGEX = /^[a-z]{2}$/
 
+function createProxyToken(url) {
+    if (!url.username && !url.password)
+        return undefined
+
+    return 'Basic '
+            + Buffer.from(
+                [
+                    url.username || '' ,
+                    url.password || ''
+                ].join(':')
+            ).toString('base64')
+}
+
 function createDispatcher(url) {
     assert(url instanceof URL)
     if (PROTO_SOCKS_TEST_REGEX.test(url.protocol)) {
@@ -21,7 +34,10 @@ function createDispatcher(url) {
         })
     }
 
-    return new ProxyAgent(url.toString())
+    return new ProxyAgent({
+        uri: url.toString(),
+        token: createProxyToken(url)
+    })
 }
 
 export function addProxy(url, country) {

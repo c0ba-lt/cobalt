@@ -41,8 +41,8 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           tags: |
-            type=raw,value=mu
-            type=raw,value=mu-${{ steps.package-version.outputs.current-version }}
+            type=raw,value=prox
+            type=raw,value=prox-${{ steps.package-version.outputs.current-version }}
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Build and push Docker image

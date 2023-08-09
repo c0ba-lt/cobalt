@@ -562,6 +562,10 @@ button:active,
     height: 256px;
 }
 
+#country-switcher button {
+    justify-content: flex-start;
+}
+
 .switches .switch {
     padding-left: calc(var(--gap-no-icon) + 0.1rem);
     padding-right: calc(var(--gap-no-icon) + 0.1rem);

@@ -3,36 +3,21 @@ version: '3.5'
 services:
   cobalt-api:
       build: .
+      init: true
       restart: unless-stopped
       container_name: cobalt-api
       environment:
-        - apiPort=9000
-        - apiURL=https://co.wuk.sh/
-        - apiName=mubalt
-      network_mode: "service:gluetun"
-  gluetun:
-      image: qmcgaw/gluetun
-      container_name: gluetun_mubalt
-      cap_add:
-        - NET_ADMIN
-      devices:
-        - /dev/net/tun:/dev/net/tun
-      environment:
-        - VPN_SERVICE_PROVIDER=mullvad
-        - DOT=off
-        - VPN_TYPE=wireguard
-        # copy this from mullvad generated wg.conf
-        - WIREGUARD_PRIVATE_KEY=
-        # also this
-        - WIREGUARD_ADDRESSES=
-        # also this (if different)
-        - DNS_ADDRESS=10.64.0.1
-        # any server, preferably one close to your server
-        - SERVER_HOSTNAMES=se1-wireguard
-       
-    ports:
-      - 127.0.0.1:9000:9000
-    restart: unless-stopped
+          - apiPort=9000
+          - apiURL=https://co.wuk.sh/
+          - apiName=coprox
+          - ENABLED_PROXY_PROVIDERS=ivpn,mullvad
+          - PROXY_EVERYTHING=0
+          - USE_CHAINING=1
+      ports:
+          - 127.0.0.1:9000:9000
+      depends_on:
+          - ivpn
+          - mullvad
   web:
         build: .
         restart: unless-stopped
@@ -43,3 +28,57 @@ services:
             - webPort=9001
             - webURL=https://co.wukko.me/
             - apiURL=https://co.wuk.sh/
+
+
+  mullvad:
+      image: qmcgaw/gluetun
+      container_name: mullvad
+      cap_add:
+          - NET_ADMIN
+      devices:
+          - /dev/net/tun:/dev/net/tun
+      environment:
+          - VPN_SERVICE_PROVIDER=mullvad
+          - DOT=off
+          - VPN_TYPE=wireguard
+          # copy this from mullvad generated wg.conf
+          - WIREGUARD_PRIVATE_KEY=
+          # also this
+          - WIREGUARD_ADDRESSES=
+          # also this (if different)
+          - DNS_ADDRESS=10.64.0.1
+          # any server, preferably one close to your server
+          - SERVER_HOSTNAMES=se-got-wg-001
+      restart: unless-stopped
+  mullvad_proxy:
+        image: serjs/go-socks5-proxy
+        depends_on:
+            - mullvad
+        network_mode: "container:mullvad"
+
+
+  ivpn:
+        image: qmcgaw/gluetun
+        container_name: ivpn
+        cap_add:
+            - NET_ADMIN
+        devices:
+            - /dev/net/tun:/dev/net/tun
+        environment:
+            - VPN_SERVICE_PROVIDER=ivpn
+            - DOT=off
+            - VPN_TYPE=wireguard
+            # pull this from ivpn wg.conf
+            - WIREGUARD_PRIVATE_KEY=
+            # also this
+            - WIREGUARD_ADDRESSES=
+            # also this (if different)
+            - DNS_ADDRESS=172.16.0.1
+            # any server, preferably one close to your server
+            - SERVER_HOSTNAMES=nl1.wg.ivpn.net
+        restart: unless-stopped
+  ivpn_proxy:
+        image: serjs/go-socks5-proxy
+        depends_on:
+            - ivpn
+        network_mode: "container:ivpn"

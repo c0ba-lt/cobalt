@@ -8,6 +8,11 @@
 - behavior of the `any` country:
     - if `PROXY_EVERYTHING` is 1, it picks a country at random
     - otherwise, it does not use a proxy
+- chaining: `USE_CHAINING` environment variable is `1`
+    - instead of tunnelling the entire instance, we have gluetun container/s? and a socks5 server running separately
+    - this allows us to use several different providers that require a VPN connection
+    - when they are used, cobalt hops through several socks servers (examples: providers/{mullvad,ivpn}.js)
+    - if running standalone, probably disable this
 
 ### Provider
 - exports at least a default function
@@ -20,8 +25,9 @@
     - `/^[a-z]{2}$/.test(countryCode) === true`
 
 changing the proxy list:
+- `ProxyManager.addProxy(url: string | URL, country: countryCode, via: Array[string | URL] | null) -> void`
+    - `via` is only supported for SOCKS proxies, and indicates the 'hops'
 - `ProxyManager.removeProxy(url: string | URL, country: countryCode) -> void`
-- `ProxyManager.addProxy(url: string | URL, country: countryCode) -> void`
 
 view functions:
 - `ProxyManager.getCountries() ~> Array[countryCode]`

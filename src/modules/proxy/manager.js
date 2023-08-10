@@ -21,18 +21,31 @@ function createProxyToken(url) {
             ).toString('base64')
 }
 
-function createDispatcher(url) {
+function createDispatcher(proxyData) {
+    const { url, via } = proxyData
     assert(url instanceof URL)
     if (PROTO_SOCKS_TEST_REGEX.test(url.protocol)) {
-        const type = Number(url.protocol.match(PROTO_SOCKS_PARSE_REGEX)?.[1]) || 5
-        return socksDispatcher({
-            type,
-            host: url.hostname,
-            port: Number(url.port) || 1080,
-            userId: url.username   || undefined,
-            password: url.password || undefined,
-        })
+        return socksDispatcher(
+            [...via, url].map(u => {
+                if (u === null)
+                    return null;
+
+                return {
+                    type: Number(
+                        u.protocol
+                        .match(PROTO_SOCKS_PARSE_REGEX)?.[1]
+                    ) || 5,
+                    host: u.hostname,
+                    port: Number(u.port) || 1080,
+                    userId: url.username   || undefined,
+                    password: url.password || undefined,
+                }
+            }).filter(a => a)
+        )
     }
+    
+    if (via)
+        throw '`via` only supported for socks proxies'
 
     return new ProxyAgent({
         uri: url.toString(),
@@ -40,7 +53,7 @@ function createDispatcher(url) {
     })
 }
 
-export function addProxy(url, country) {
+export function addProxy(url, country, via = []) {
     if (!COUNTRY_CODE_TEST_REGEX.test(country))
         throw 'invalid country code'
 
@@ -52,7 +65,10 @@ export function addProxy(url, country) {
     if (!proxies[country])
         proxies[country] = []
 
-    proxies[country].push(url)
+    for (const i in via)
+        via[i] = new URL(via[i])
+
+    proxies[country].push({ url, via })
 }
 
 export function removeProxy(url, country) {
@@ -60,7 +76,10 @@ export function removeProxy(url, country) {
         return
 
     url = new URL(url)
-    proxies[country] = proxies[country].filter(u => u.toString() !== url.toString())
+    proxies[country] = proxies[country].filter(
+        u => u.url.toString() !== url.toString()
+    )
+
     if (proxies[country].length === 0)
         proxies[country] = undefined
 }

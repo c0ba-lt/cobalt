@@ -7,7 +7,7 @@ export default function() {
         try {
            await (await import('./providers/' + providerName + '.js')).default()
         } catch(e) {
-            console.error('warn: loading provier', providerName, 'failed:')
+            console.error('warn: loading provider', providerName, 'failed')
             console.error(e)
         }
     })

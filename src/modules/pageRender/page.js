@@ -412,7 +412,7 @@ export default function(obj) {
         {
             name: "country",
             type: "popup",
-            text: "🌎",
+            text: `${emoji("🌎" , 22)} country`,
             aria: t("select country")
         },
         {

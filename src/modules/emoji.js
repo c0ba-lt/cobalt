@@ -26,7 +26,8 @@ const names = {
     "👾": "alien_monster",
     "😿": "cat_crying",
     "🙀": "cat_flabbergasted",
-    "🐱": "cat_smile"
+    "🐱": "cat_smile",
+    "🌎": "globe"
 }
 let sizing = {
     18: 0.8,

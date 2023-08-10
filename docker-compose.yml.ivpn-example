@@ -1,0 +1,45 @@
+version: '3.5'
+
+services:
+  cobalt-api:
+      build: .
+      restart: unless-stopped
+      container_name: cobalt-api
+      environment:
+        - apiPort=9000
+        - apiURL=https://co.wuk.sh/
+        - apiName=mubalt
+      network_mode: "service:gluetun"
+  gluetun:
+      image: qmcgaw/gluetun
+      container_name: gluetun_mubalt
+      cap_add:
+        - NET_ADMIN
+      devices:
+        - /dev/net/tun:/dev/net/tun
+      environment:
+        - VPN_SERVICE_PROVIDER=ivpn
+        - DOT=off
+        - VPN_TYPE=wireguard
+        # copy this from ivpn generated wg.conf
+        - WIREGUARD_PRIVATE_KEY=
+        # also this
+        - WIREGUARD_ADDRESSES=
+        # also this (if different)
+        - DNS_ADDRESS=172.16.0.1
+        # any server, preferably one close to your server
+        - SERVER_HOSTNAMES=nl1.wg.ivpn.net
+       
+    ports:
+      - 127.0.0.1:9000:9000
+    restart: unless-stopped
+  web:
+        build: .
+        restart: unless-stopped
+        container_name: cobalt-web
+        ports:
+            - 9001:9001/tcp
+        environment:
+            - webPort=9001
+            - webURL=https://co.wukko.me/
+            - apiURL=https://co.wuk.sh/

@@ -24,6 +24,8 @@ function createProxyToken(url) {
 function createDispatcher(proxyData) {
     const { url, via } = proxyData
     assert(url instanceof URL)
+    assert(via === undefined || Array.isArray(via))
+
     if (PROTO_SOCKS_TEST_REGEX.test(url.protocol)) {
         return socksDispatcher(
             [...via, url].map(u => {
@@ -44,7 +46,7 @@ function createDispatcher(proxyData) {
         )
     }
     
-    if (via)
+    if (via && via.length > 0)
         throw '`via` only supported for socks proxies'
 
     return new ProxyAgent({

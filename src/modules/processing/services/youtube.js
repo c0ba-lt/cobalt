@@ -43,7 +43,9 @@ export default async function(o) {
         return { error: 'ErrorYTUnavailable' }
 
     const yt = await Innertube.create({
-        fetch: async (input, init) => fetch(input, { ...(init || {}), dispatcher })
+        fetch: async (input, init) => fetch(input, { ...(init || {}), dispatcher }),
+        retrieve_player: false,
+        generate_session_locally: true
     });
     
     let info, isDubbed, quality = o.quality === "max" ? "9000" : o.quality; //set quality 9000(p) to be interpreted as max

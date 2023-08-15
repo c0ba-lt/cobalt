@@ -26,7 +26,7 @@ export default class Cookie {
         .forEach(cookie => {
             const key = cookie.split('=')[0]
             const value = cookie.split('=').splice(1).join('=')
-            obj[key] = value
+            obj[key] = decodeURIComponent(value)
         })
 
         return new Cookie(obj);

@@ -30,11 +30,6 @@ async function writeChanges() {
     })
 }
 
-function parseCookie(serviceArray, index) {
-    serviceArray[index] = Cookie.fromString(serviceArray[index])
-    dirty = true
-}
-
 export function getCookie(service) {
     if (!cookies[service] || !cookies[service].length)
         return
@@ -49,7 +44,7 @@ export function getCookie(service) {
 
     const cookie = cookies[service][n]
     if (typeof cookie === 'string')
-        parseCookie(cookies[service], n)
+        cookies[service][n] = Cookie.fromString(serviceArray[index])
 
     return cookies[service][n]
 }

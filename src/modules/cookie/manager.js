@@ -4,13 +4,15 @@ import { readFile, writeFile } from 'fs/promises'
 import { parse as parseSetCookie, splitCookiesString } from 'set-cookie-parser'
 
 const WRITE_INTERVAL = 60000,
-      DEFAULT_PATH = path.join(path.dirname(import.meta.url.replace('file://', '')), 'cookies.json'),
-      COOKIE_PATH = process.env.COOKIE_PATH || DEFAULT_PATH,
+      COOKIE_PATH = process.env.COOKIE_PATH,
       COUNTER = Symbol('counter');
 
 let cookies = {}, dirty = false, intervalId;
 
 try {
+    if (!COOKIE_PATH)
+        return
+
     cookies = await readFile(COOKIE_PATH, 'utf8')
     cookies = JSON.parse(cookies)
     intervalId = setInterval(writeChanges, WRITE_INTERVAL)

@@ -9,16 +9,20 @@ const WRITE_INTERVAL = 60000,
 
 let cookies = {}, dirty = false, intervalId;
 
-try {
-    if (!COOKIE_PATH)
-        return
+const setup = async () => {
+    try {
+        if (!COOKIE_PATH)
+            return
 
-    cookies = await readFile(COOKIE_PATH, 'utf8')
-    cookies = JSON.parse(cookies)
-    intervalId = setInterval(writeChanges, WRITE_INTERVAL)
-} catch { /* no cookies for you */ }
-      
-async function writeChanges() {
+        cookies = await readFile(COOKIE_PATH, 'utf8')
+        cookies = JSON.parse(cookies)
+        intervalId = setInterval(writeChanges, WRITE_INTERVAL)
+    } catch { /* no cookies for you */ }
+}
+
+setup()
+
+function writeChanges() {
     if (!dirty) return
     dirty = false
 

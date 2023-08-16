@@ -44,7 +44,7 @@ export function getCookie(service) {
 
     const cookie = cookies[service][n]
     if (typeof cookie === 'string')
-        cookies[service][n] = Cookie.fromString(serviceArray[index])
+        cookies[service][n] = Cookie.fromString(cookie)
 
     return cookies[service][n]
 }

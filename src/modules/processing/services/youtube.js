@@ -23,10 +23,15 @@ const c = {
 }
 
 const pickDispatcher = async o => {
-    const videoAvailability = await blockcheck(o.id);
-    if (videoAvailability === (await getRegions()).length) // available worldwide
+    let videoAvailability
+    try {
+        videoAvailability = await blockcheck(o.id);
+        if (videoAvailability === (await getRegions()).length) // available worldwide
+            return o.dispatcher;
+    } catch {
         return o.dispatcher;
-    
+    }
+
     const proxyAvailability = new Set(await getCountries());
     const intersection = videoAvailability
                             .map(c => c.toLowerCase())

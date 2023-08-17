@@ -2,6 +2,8 @@ import { createStream } from "../../stream/manage.js";
 import { genericUserAgent } from "../../config.js";
 
 export default async function(obj) {
+    const { dispatcher } = obj;
+
     let data;
     try {
         const url = new URL('https://www.instagram.com/graphql/query/');
@@ -25,8 +27,9 @@ export default async function(obj) {
                 'Sec-Fetch-Site': 'same-origin',
                 'upgrade-insecure-requests': '1',
                 'accept-encoding': 'gzip, deflate, br',
-                'accept-language': 'en-US,en;q=0.9,en;q=0.8'
-            }
+                'accept-language': 'en-US,en;q=0.9,en;q=0.8',
+            },
+            dispatcher
         })
         data = (await data.json()).data;
     } catch (e) {
@@ -49,7 +52,8 @@ export default async function(obj) {
                         service: "instagram",
                         type: "default",
                         u: e.node?.display_url,
-                        filename: "image.jpg"
+                        filename: "image.jpg",
+                        dispatcher
                     }),
                     url: e.node?.video_url
                 })

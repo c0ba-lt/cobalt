@@ -26,7 +26,7 @@ const pickDispatcher = async o => {
     let videoAvailability
     try {
         videoAvailability = await blockcheck(o.id);
-        if (videoAvailability === (await getRegions()).length) // available worldwide
+        if (videoAvailability.length === (await getRegions()).length) // available worldwide
             return o.dispatcher;
     } catch {
         return o.dispatcher;

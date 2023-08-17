@@ -27,7 +27,14 @@ const names = {
     "😿": "cat_crying",
     "🙀": "cat_flabbergasted",
     "🐱": "cat_smile",
-    "🌎": "globe"
+    "🌎": "globe",
+    "❤️‍🩹": "mending_heart",
+    "🔒": "locked",
+    "🔍": "magnifying_glass",
+    "🔗": "link",
+    "⌨": "keyboard",
+    "📑": "boring_document",
+    "🧮": "abacus"
 }
 let sizing = {
     18: 0.8,

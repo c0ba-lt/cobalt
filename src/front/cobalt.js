@@ -5,7 +5,7 @@ const isSafari = ua.match("safari/");
 const isFirefox = ua.match("firefox/");
 const isOldFirefox = ua.match("firefox/") && ua.split("firefox/")[1].split('.')[0] < 103;
 
-const version = 33;
+const version = 34;
 const regex = new RegExp(/https:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)/);
 const notification = `<div class="notification-dot"></div>`;
 
@@ -205,31 +205,35 @@ function popup(type, action, text) {
                         eid("picker-title").innerHTML = loc.pickerImages;
                         eid("picker-subtitle").innerHTML = loc.pickerImagesExpl;
 
-                        eid("popup-picker").classList.add("scrollable");
                         eid("picker-holder").classList.remove("various");
 
                         eid("picker-download").href = text.audio;
                         eid("picker-download").classList.add("visible");
 
                         for (let i in text.arr) {
-                            eid("picker-holder").innerHTML += `<a class="picker-image-container"><img class="picker-image" src="${text.arr[i]["url"]}" onerror="this.parentNode.style.display='none'"></img></a>`
+                            eid("picker-holder").innerHTML +=
+                            `<a class="picker-image-container" ${
+                                isIOS ? `onClick="share('${text.arr[i]["url"]}')` : `href="${text.arr[i]["url"]}" target="_blank"`
+                            }>` +
+                                `<img class="picker-image" src="${text.arr[i]["url"]}" onerror="this.parentNode.style.display='none'"></img>` +
+                            `</a>`
                         }
                         break;
                     default:
                         eid("picker-title").innerHTML = loc.pickerDefault;
                         eid("picker-subtitle").innerHTML = loc.pickerDefaultExpl;
 
-                        eid("popup-picker").classList.remove("scrollable");
                         eid("picker-holder").classList.add("various");
 
                         for (let i in text.arr) {
-                            let s = text.arr[i], item;
-                            switch (s.type) {
-                                case "video":
-                                    item = `<div class="picker-image-container" onClick="${isIOS ? `share('${text.arr[i]["url"]}')` : `window.location.href='${text.arr[i]["url"]}'`}"><div class="picker-element-name">${Number(i)+1}</div><div class="imageBlock"></div><img class="picker-image" src="${text.arr[i]["thumb"]}" onerror="this.style.display='none'"></img></div>`
-                                    break;
-                            }
-                            eid("picker-holder").innerHTML += item
+                            eid("picker-holder").innerHTML +=
+                            `<a class="picker-image-container" ${
+                                isIOS ? `onClick="share('${text.arr[i]["url"]}')` : `href="${text.arr[i]["url"]}" target="_blank"`
+                            }>` + 
+                                `<div class="picker-element-name">${text.arr[i].type}</div>` +
+                                `<div class="imageBlock"></div>` +
+                                `<img class="picker-image" src="${text.arr[i]["thumb"]}" onerror="this.style.display='none'"></img>` +
+                            `</a>`
                         }
                         eid("picker-download").classList.remove("visible");
                         break;

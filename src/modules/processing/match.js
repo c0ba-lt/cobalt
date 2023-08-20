@@ -18,6 +18,8 @@ import instagram from "./services/instagram.js";
 import vine from "./services/vine.js";
 import pinterest from "./services/pinterest.js";
 import { randomProxyFrom } from "../proxy/manager.js";
+import streamable from "./services/streamable.js";
+
 export default async function (host, patternMatch, url, lang, obj) {
     try {
         let dispatcher
@@ -126,6 +128,13 @@ export default async function (host, patternMatch, url, lang, obj) {
                 break;
             case "pinterest":
                 r = await pinterest({ id: patternMatch["id"], dispatcher });
+                break;
+            case "streamable":
+                r = await streamable({
+                    id: patternMatch["id"],
+                    quality: obj.vQuality,
+                    isAudioOnly: isAudioOnly,
+                });
                 break;
             default:
                 return apiJSON(0, { t: errorUnsupported(lang) });

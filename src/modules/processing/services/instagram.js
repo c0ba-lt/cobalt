@@ -1,5 +1,6 @@
 import { createStream } from "../../stream/manage.js";
 import { genericUserAgent } from "../../config.js";
+import { getCookie, updateCookie } from '../cookie/manager.js';
 
 export default async function(obj) {
     const { dispatcher } = obj;
@@ -16,6 +17,8 @@ export default async function(obj) {
             shortcode: obj.id
         }))
 
+        const cookie = getCookie('instagram');
+
         data = await fetch(url, {
             headers: {
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
@@ -28,14 +31,15 @@ export default async function(obj) {
                 'upgrade-insecure-requests': '1',
                 'accept-encoding': 'gzip, deflate, br',
                 'accept-language': 'en-US,en;q=0.9,en;q=0.8',
+                cookie
             },
             dispatcher
         })
+        updateCookie(cookie, data.headers);
         data = (await data.json()).data;
     } catch (e) {
         data = false;
     }
-
 
     if (!data) return { error: 'ErrorCouldntFetch' };
 
@@ -43,7 +47,6 @@ export default async function(obj) {
     const sidecar = data?.shortcode_media?.edge_sidecar_to_children;
     if (sidecar) {
         sidecar.edges.forEach(e => {
-            // todo: allow downloading images once frontend supports it
             if (e.node?.is_video) {
                 multiple.push({
                     type: "video",
@@ -57,16 +60,36 @@ export default async function(obj) {
                     }),
                     url: e.node?.video_url
                 })
+            } else {
+                multiple.push({
+                    type: "photo",
+                    thumb: createStream({
+                        service: "instagram",
+                        type: "default",
+                        u: e.node?.display_url,
+                        filename: "image.jpg"
+                    }),
+                    url: e.node?.display_url
+                })
             }
         })
     } else if (data?.shortcode_media?.video_url) {
         single = data.shortcode_media.video_url
+    } else if (data?.shortcode_media?.display_url) {
+        return {
+            urls: data?.shortcode_media?.display_url,
+            isPhoto: true
+        }
     } else {
         return { error: 'ErrorEmptyDownload' }
     }
 
     if (single) {
-        return { urls: single, filename: `instagram_${obj.id}.mp4`, audioFilename: `instagram_${obj.id}_audio` }
+        return {
+            urls: single,
+            filename: `instagram_${obj.id}.mp4`,
+            audioFilename: `instagram_${obj.id}_audio`
+        }
     } else if (multiple.length) {
         return { picker: multiple }
     } else {

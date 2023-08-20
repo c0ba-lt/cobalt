@@ -52,10 +52,7 @@ services:
       restart: unless-stopped
   mullvad_proxy:
         image: serjs/go-socks5-proxy
-        depends_on:
-            - mullvad
         network_mode: "container:mullvad"
-
 
   ivpn:
         image: qmcgaw/gluetun
@@ -79,6 +76,4 @@ services:
         restart: unless-stopped
   ivpn_proxy:
         image: serjs/go-socks5-proxy
-        depends_on:
-            - ivpn
         network_mode: "container:ivpn"

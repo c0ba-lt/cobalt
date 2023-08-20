@@ -9,14 +9,16 @@ export default function(r, host, audioFormat, isAudioOnly, lang, isAudioMuted, d
             u: r.urls,
             service: host,
             filename: r.filename,
+            fileMetadata: r.fileMetadata ? r.fileMetadata : false
         },
         params = {}
     
-    if (!isAudioOnly && !r.picker && !isAudioMuted) action = "video";
-    if (r.isM3U8) action = "singleM3U8";
-    if (isAudioOnly && !r.picker) action = "audio";
-    if (r.picker) action = "picker";
-    if (isAudioMuted) action = "muteVideo";
+    if (r.isPhoto) action = "photo";
+    else if (r.picker) action = "picker"
+    else if (isAudioMuted) action = "muteVideo";
+    else if (isAudioOnly) action = "audio";
+    else if (r.isM3U8) action = "singleM3U8";
+    else action = "video";
 
     if (action === "picker" || action === "audio") {
         defaultParams.filename = r.audioFilename;
@@ -25,13 +27,16 @@ export default function(r, host, audioFormat, isAudioOnly, lang, isAudioMuted, d
     }
 
     switch (action) {
+        case "photo":
+            responseType = 1;
+            break;
         case "video":
             switch (host) {
                 case "bilibili":
-                    params = { type: "render", time: r.time };
+                    params = { type: "render" };
                     break;
                 case "youtube":
-                    params = { type: r.type, time: r.time };
+                    params = { type: r.type };
                     break;
                 case "reddit":
                     responseType = r.typeId;
@@ -56,6 +61,7 @@ export default function(r, host, audioFormat, isAudioOnly, lang, isAudioMuted, d
                 case "tumblr":
                 case "twitter":
                 case "pinterest":
+                case "streamable":
                     responseType = 1;
                     break;
             }
@@ -138,8 +144,7 @@ export default function(r, host, audioFormat, isAudioOnly, lang, isAudioMuted, d
                 type: processType,
                 u: Array.isArray(r.urls) ? r.urls[1] : r.urls,
                 audioFormat: audioFormat,
-                copy: copy,
-                fileMetadata: r.fileMetadata ? r.fileMetadata : false
+                copy: copy
             }
             break;
         default:

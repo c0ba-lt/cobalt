@@ -73,6 +73,8 @@ export default function(obj) {
         <link rel="stylesheet" href="fonts/notosansmono.css" rel="preload" />
         <link rel="stylesheet" href="cobalt.css" />
 
+        <link rel="me" href="${authorInfo.support.mastodon.url}">
+
         <noscript><div style="margin: 2rem;">${t('NoScriptMessage')}</div></noscript>
     </head>
     <body id="cobalt-body" ${platform === "p" ? 'class="desktop"' : ''} data-nosnippet ontouchstart>
@@ -517,9 +519,9 @@ export default function(obj) {
         <div id="popup-backdrop" onclick="hideAllPopups()"></div>
         <div id="home" style="visibility:hidden">
             ${urgentNotice({
-                emoji: "🐱",
-                text: "report any issues!",
-                visible: false,
+                emoji: "🔗",
+                text: t("UrgentFeatureUpdate71"),
+                visible: true,
                 action: "popup('about', 1, 'changelog')"
             })}
             <div id="cobalt-main-box" class="center">

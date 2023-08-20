@@ -1,6 +1,6 @@
 import { createStream } from "../../stream/manage.js";
 import { genericUserAgent } from "../../config.js";
-import { getCookie, updateCookie } from '../../cookie/manager.js';
+import { getCookie, updateCookie } from '../cookie/manager.js';
 
 export default async function(obj) {
     let data;
@@ -38,14 +38,12 @@ export default async function(obj) {
         data = false;
     }
 
-
     if (!data) return { error: 'ErrorCouldntFetch' };
 
     let single, multiple = [];
     const sidecar = data?.shortcode_media?.edge_sidecar_to_children;
     if (sidecar) {
         sidecar.edges.forEach(e => {
-            // todo: allow downloading images once frontend supports it
             if (e.node?.is_video) {
                 multiple.push({
                     type: "video",
@@ -58,16 +56,36 @@ export default async function(obj) {
                     }),
                     url: e.node?.video_url
                 })
+            } else {
+                multiple.push({
+                    type: "photo",
+                    thumb: createStream({
+                        service: "instagram",
+                        type: "default",
+                        u: e.node?.display_url,
+                        filename: "image.jpg"
+                    }),
+                    url: e.node?.display_url
+                })
             }
         })
     } else if (data?.shortcode_media?.video_url) {
         single = data.shortcode_media.video_url
+    } else if (data?.shortcode_media?.display_url) {
+        return {
+            urls: data?.shortcode_media?.display_url,
+            isPhoto: true
+        }
     } else {
         return { error: 'ErrorEmptyDownload' }
     }
 
     if (single) {
-        return { urls: single, filename: `instagram_${obj.id}.mp4`, audioFilename: `instagram_${obj.id}_audio` }
+        return {
+            urls: single,
+            filename: `instagram_${obj.id}.mp4`,
+            audioFilename: `instagram_${obj.id}_audio`
+        }
     } else if (multiple.length) {
         return { picker: multiple }
     } else {

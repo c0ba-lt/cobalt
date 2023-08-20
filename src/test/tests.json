@@ -112,6 +112,22 @@
             "status": "redirect"
         }
     }, {
+        "name": "twitter voice + x.com link",
+        "url": "https://x.com/eggsaladscreams/status/1693089534886506756?s=46",
+        "params": {},
+        "expected": {
+            "code": 200,
+            "status": "redirect"
+        }
+    }, {
+        "name": "vxtwitter link",
+        "url": "https://vxtwitter.com/dustbin_nie/status/1624596567188717568?s=20",
+        "params": {},
+        "expected": {
+            "code": 200,
+            "status": "redirect"
+        }
+    }, {
         "name": "retweeted video, isAudioOnly",
         "url": "https://twitter.com/hugekiwinuts/status/1618671150829309953?s=46&t=gItGzgwGQQJJaJrO6qc1Pg",
         "params": {
@@ -495,6 +511,16 @@
             "status": "stream"
         }
     }, {
+        "name": "4k video",
+        "url": "https://vk.com/video-1112285_456248465",
+        "params": {
+            "vQuality": "max"
+        },
+        "expected": {
+            "code": 200,
+            "status": "stream"
+        }
+    }, {
         "name": "ancient video (fallback to 240p)",
         "url": "https://vk.com/video-1959_28496479",
         "params": {},
@@ -834,8 +860,16 @@
         }
     }],
     "instagram": [{
-        "name": "several videos in a post (picker)",
-        "url": "https://www.instagram.com/p/CqifaD0qiDt/",
+        "name": "single photo post",
+        "url": "https://www.instagram.com/p/CwIgW8Yu5-I/",
+        "params": {},
+        "expected": {
+            "code": 200,
+            "status": "redirect"
+        }
+    }, {
+        "name": "various picker (photos + video)",
+        "url": "https://www.instagram.com/p/CvYrSgnsKjv/",
         "params": {},
         "expected": {
             "code": 200,
@@ -982,6 +1016,51 @@
         "expected": {
             "code": 200,
             "status": "redirect"
+        }
+    }],
+    "streamable": [{
+        "name": "regular video",
+        "url": "https://streamable.com/03r3c2",
+        "params": {},
+        "expected": {
+            "code": 200,
+            "status": "redirect"
+        }
+    }, {
+        "name": "embedded link",
+        "url": "https://streamable.com/e/rsmo56",
+        "params": {},
+        "expected": {
+            "code": 200,
+            "status": "redirect"
+        }
+    }, {
+        "name": "regular video (isAudioOnly)",
+        "url": "https://streamable.com/03r3c2",
+        "params": {
+            "isAudioOnly": true
+        },
+        "expected": {
+            "code": 200,
+            "status": "stream"
+        }
+    }, {
+        "name": "regular video (isAudioMuted)",
+        "url": "https://streamable.com/03r3c2",
+        "params": {
+            "isAudioMuted": true
+        },
+        "expected": {
+            "code": 200,
+            "status": "stream"
+        }
+    }, {
+        "name": "inexistent video",
+        "url": "https://streamable.com/XXXXXX",
+        "params": {},
+        "expected": {
+            "code": 400,
+            "status": "error"
         }
     }]
 }

@@ -1,36 +1,42 @@
 import { spawn } from "child_process";
 import ffmpeg from "ffmpeg-static";
 import { ffmpegArgs, genericUserAgent } from "../config.js";
-import { getThreads, metadataManager, msToTime } from "../sub/utils.js";
-import { Readable } from 'node:stream'
+import { getThreads, metadataManager } from "../sub/utils.js";
+import { request } from 'undici';
 
-const fail = res => res.destroy(); // todo: don't just close connection
+function fail(res) {
+    if (!res.headersSent) res.sendStatus(500);
+    return res.destroy();
+}
 
 export async function streamDefault(streamInfo, res) {
     try {
         let format = streamInfo.filename.split('.')[streamInfo.filename.split('.').length - 1];
         let regFilename = !streamInfo.mute ? streamInfo.filename : `${streamInfo.filename.split('.')[0]}_mute.${format}`;
         res.setHeader('Content-disposition', `attachment; filename="${streamInfo.isAudioOnly ? `${streamInfo.filename}.${streamInfo.audioFormat}` : regFilename}"`);
-        const req = await fetch(streamInfo.urls, {
-            headers: { "user-agent": genericUserAgent }
-        })
-        const stream = Readable.fromWeb(req.body)
+
+        const { body: stream, headers } = await request(streamInfo.urls, {
+            headers: { 'user-agent': genericUserAgent }
+        });
+
+        res.setHeader('content-type', headers['content-type']);
+        res.setHeader('content-length', headers['content-length']);
+
         stream.pipe(res).on('error', () => fail(res));
         stream.on('error', () => fail(res));
         stream.on('aborted', () => fail(res));
     } catch (e) {
-        console.error(e);
         fail(res);
     }
 }
 export async function streamLiveRender(streamInfo, res) {
     try {
-        if (streamInfo.urls.length !== 2) {
-            res.destroy();
-            return;
-        }
+        if (streamInfo.urls.length !== 2) return fail(res);
 
-        let format = streamInfo.filename.split('.')[streamInfo.filename.split('.').length - 1], args = [
+        let { body: audio } = await request(streamInfo.urls[1]);
+
+        let format = streamInfo.filename.split('.')[streamInfo.filename.split('.').length - 1],
+        args = [
             '-loglevel', '-8',
             '-threads', `${getThreads()}`,
             '-protocol_whitelist', 'tcp,tls,http,https,pipe',
@@ -39,9 +45,11 @@ export async function streamLiveRender(streamInfo, res) {
             '-map', '0:v',
             '-map', '1:a',
         ];
-        args = args.concat(ffmpegArgs[format])
-        if (streamInfo.time) args.push('-t', msToTime(streamInfo.time));
-        args.push('-f', format, 'pipe:5');
+
+        args = args.concat(ffmpegArgs[format]);
+        if (streamInfo.metadata) args = args.concat(metadataManager(streamInfo.metadata));
+        args.push('-f', format, 'pipe:4');
+
         let ffmpegProcess = spawn(ffmpeg, args, {
             windowsHide: true,
             stdio: [
@@ -111,7 +119,6 @@ export async function streamLiveRender(streamInfo, res) {
         });
 
     } catch (e) {
-        console.error(e);
         fail(res);
     }
 }
@@ -171,10 +178,9 @@ export async function streamAudioOnly(streamInfo, res) {
         res.on('close', () => ffmpegProcess.kill());
         ffmpegProcess.on('error', () => {
             ffmpegProcess.kill();
-            res.destroy();
+            fail(res);
         });
     } catch (e) {
-        console.error(e);
         fail(res);
     }
 }
@@ -226,7 +232,6 @@ export async function streamVideoOnly(streamInfo, res) {
             fail(res)
         });
     } catch (e) {
-        console.error(e)
-        fail(res)
+        fail(res);
     }
 }

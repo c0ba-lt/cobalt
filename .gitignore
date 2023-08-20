@@ -17,5 +17,5 @@ docker-compose.yml
 # vscode
 .vscode
 
-# cookies
-src/modules/cookie/cookies.json
+# cookie file
+cookies.json

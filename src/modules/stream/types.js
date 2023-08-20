@@ -48,7 +48,7 @@ export async function streamLiveRender(streamInfo, res) {
 
         args = args.concat(ffmpegArgs[format]);
         if (streamInfo.metadata) args = args.concat(metadataManager(streamInfo.metadata));
-        args.push('-f', format, 'pipe:4');
+        args.push('-f', format, 'pipe:5');
 
         let ffmpegProcess = spawn(ffmpeg, args, {
             windowsHide: true,

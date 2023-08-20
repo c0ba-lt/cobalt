@@ -3,6 +3,7 @@ import ffmpeg from "ffmpeg-static";
 import { ffmpegArgs, genericUserAgent } from "../config.js";
 import { getThreads, metadataManager } from "../sub/utils.js";
 import { request } from 'undici';
+import { Readable } from 'node:stream';
 
 function fail(res) {
     if (!res.headersSent) res.sendStatus(500);

@@ -1,4 +1,4 @@
-import { streamAudioOnly, streamDefault, streamLiveRender, streamVideoOnly } from "./types.js";
+import { streamAudioOnly, streamDefault, streamLiveRender, streamVideoOnly, internalStream } from "./types.js";
 
 export default async function(res, streamInfo) {
     try {
@@ -7,6 +7,9 @@ export default async function(res, streamInfo) {
             return;
         }
         switch (streamInfo.type) {
+            case "internal":
+                await internalStream(streamInfo, res);
+                break;
             case "render":
                 await streamLiveRender(streamInfo, res);
                 break;

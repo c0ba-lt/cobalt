@@ -3,7 +3,6 @@ import ffmpeg from "ffmpeg-static";
 import { ffmpegArgs, genericUserAgent } from "../config.js";
 import { getThreads, metadataManager } from "../sub/utils.js";
 import { request } from 'undici';
-import { Readable } from 'node:stream';
 
 function fail(res) {
     if (!res.headersSent) res.sendStatus(500);
@@ -34,27 +33,25 @@ export async function streamLiveRender(streamInfo, res) {
     try {
         if (streamInfo.urls.length !== 2) return fail(res);
 
-        let { body: audio } = await request(streamInfo.urls[1]);
-
         let format = streamInfo.filename.split('.')[streamInfo.filename.split('.').length - 1],
         args = [
             '-loglevel', '-8',
             '-threads', `${getThreads()}`,
-            '-i', 'pipe:3',
-            '-i', 'pipe:4',
+            '-i', streamInfo.urls[0],
+            '-i', streamInfo.urls[1],
             '-map', '0:v',
             '-map', '1:a',
         ];
 
         args = args.concat(ffmpegArgs[format]);
         if (streamInfo.metadata) args = args.concat(metadataManager(streamInfo.metadata));
-        args.push('-f', format, 'pipe:5');
+        args.push('-f', format, 'pipe:3');
 
         let ffmpegProcess = spawn(ffmpeg, args, {
             windowsHide: true,
             stdio: [
                 'inherit', 'inherit', 'inherit',
-                'pipe', 'pipe', 'pipe'
+                'pipe'
             ],
         });
         res.setHeader('Connection', 'keep-alive');
@@ -63,50 +60,10 @@ export async function streamLiveRender(streamInfo, res) {
             ffmpegProcess.kill();
             fail(res);
         });
-        ffmpegProcess.stdio[5].pipe(res).on('error', () => {
+        ffmpegProcess.stdio[3].pipe(res).on('error', () => {
             ffmpegProcess.kill();
             fail(res);
         });
-
-        fetch(streamInfo.urls[0], { dispatcher: streamInfo.dispatcher }).then(
-            (res) => {
-                const stream = Readable.fromWeb(res.body)
-                stream.pipe(ffmpegProcess.stdio[3]).on('error', () => {
-                    ffmpegProcess.kill();
-                    fail(res);
-                });
-        
-                stream.on('error', () => {
-                    ffmpegProcess.kill();
-                    fail(res);
-                });
-
-                stream.on('aborted', () => {
-                    ffmpegProcess.kill();
-                    fail(res);
-                });
-            }
-        )
-
-        fetch(streamInfo.urls[1], { dispatcher: streamInfo.dispatcher }).then(
-            (res) => {
-                const stream = Readable.fromWeb(res.body)
-                stream.pipe(ffmpegProcess.stdio[4]).on('error', () => {
-                    ffmpegProcess.kill();
-                    fail(res);
-                });
-                
-                stream.on('error', () => {
-                    ffmpegProcess.kill();
-                    fail(res);
-                });
-        
-                stream.on('aborted', () => {
-                    ffmpegProcess.kill();
-                    fail(res);
-                });
-            }
-        )
 
         ffmpegProcess.on('disconnect', () => ffmpegProcess.kill());
         ffmpegProcess.on('close', () => ffmpegProcess.kill());
@@ -124,13 +81,10 @@ export async function streamLiveRender(streamInfo, res) {
 }
 export async function streamAudioOnly(streamInfo, res) {
     try {
-        let { body: stream } = await fetch(streamInfo.urls, { dispatcher: streamInfo.dispatcher });
-        const audio = Readable.fromWeb(stream)
-
         let args = [
             '-loglevel', '-8',
             '-threads', `${getThreads()}`,
-            '-i', 'pipe:3'
+            '-i', streamInfo.urls
         ]
         if (streamInfo.metadata) {
             if (streamInfo.metadata.cover) { // currently corrupts the audio
@@ -146,13 +100,13 @@ export async function streamAudioOnly(streamInfo, res) {
         args = args.concat(arg);
 
         if (ffmpegArgs[streamInfo.audioFormat]) args = args.concat(ffmpegArgs[streamInfo.audioFormat]);
-        args.push('-f', streamInfo.audioFormat === "m4a" ? "ipod" : streamInfo.audioFormat, 'pipe:4');
+        args.push('-f', streamInfo.audioFormat === "m4a" ? "ipod" : streamInfo.audioFormat, 'pipe:3');
 
         const ffmpegProcess = spawn(ffmpeg, args, {
             windowsHide: true,
             stdio: [
                 'inherit', 'inherit', 'inherit',
-                'pipe', 'pipe'
+                'pipe'
             ],
         });
         res.setHeader('Connection', 'keep-alive');
@@ -185,40 +139,27 @@ export async function streamAudioOnly(streamInfo, res) {
 }
 export async function streamVideoOnly(streamInfo, res) {
     try {
-        let { body: stream } = await fetch(streamInfo.urls, { dispatcher: streamInfo.dispatcher });
-        const video = Readable.fromWeb(stream)
-
         let format = streamInfo.filename.split('.')[streamInfo.filename.split('.').length - 1], args = [
             '-loglevel', '-8',
             '-threads', `${getThreads()}`,
-            '-i', 'pipe:3',
+            '-i', streamInfo.urls,
             '-c', 'copy'
         ]
         if (streamInfo.mute) args.push('-an');
         if (streamInfo.service === "vimeo") args.push('-bsf:a', 'aac_adtstoasc');
         if (format === "mp4") args.push('-movflags', 'faststart+frag_keyframe+empty_moov');
-        args.push('-f', format, 'pipe:4');
+        args.push('-f', format, 'pipe:3');
         const ffmpegProcess = spawn(ffmpeg, args, {
             windowsHide: true,
             stdio: [
                 'inherit', 'inherit', 'inherit',
-                'pipe', 'pipe'
+                'pipe'
             ],
         });
         res.setHeader('Connection', 'keep-alive');
         res.setHeader('Content-Disposition', `attachment; filename="${streamInfo.filename.split('.')[0]}${streamInfo.mute ? '_mute' : ''}.${format}"`);
 
-        video.pipe(ffmpegProcess.stdio[3]).on('error', () => {
-            ffmpegProcess.kill();
-            fail(res);
-        });
-        
-        video.on('error', () => {
-            ffmpegProcess.kill();
-            fail(res);
-        });
-
-        ffmpegProcess.stdio[4].pipe(res);
+        ffmpegProcess.stdio[3].pipe(res);
 
         ffmpegProcess.on('disconnect', () => ffmpegProcess.kill());
         ffmpegProcess.on('close', () => ffmpegProcess.kill());
@@ -232,4 +173,21 @@ export async function streamVideoOnly(streamInfo, res) {
     } catch (e) {
         fail(res);
     }
+}
+
+export async function internalStream(streamInfo, res) {
+    const req = await request(streamInfo.url, {
+        dispatcher: streamInfo.dispatcher,
+        headers: streamInfo.headers,
+        maxRedirections: 16
+    });
+
+    res.status(req.statusCode);
+    if (req.statusCode < 200 || req.statusCode > 299)
+        return fail(res);
+
+    for (const [ name, value ] of Object.entries(req.headers))
+        res.setHeader(name, value)
+
+    req.body.pipe(res);
 }

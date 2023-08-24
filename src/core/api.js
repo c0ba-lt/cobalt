@@ -11,7 +11,7 @@ import { Bright, Cyan } from "../modules/sub/consoleText.js";
 import stream from "../modules/stream/stream.js";
 import loc from "../localization/manager.js";
 import { sha256 } from "../modules/sub/crypto.js";
-import { verifyStream } from "../modules/stream/manage.js";
+import { getInternalStream, verifyStream } from "../modules/stream/manage.js";
 import { getCountries } from "../modules/proxy/manager.js";
 import loadProxies from "../modules/proxy/loader.js";
 
@@ -139,6 +139,17 @@ export function runAPI(express, app, gitCommit, gitBranch, __dirname) {
                         })
                         return res.status(j.status).json(j.body);
                     }
+                case 'istream':
+                    if (!req.ip.endsWith('127.0.0.1'))
+                        return res.sendStatus(403);
+                    if (('' + req.query.t).length !== 21)
+                        return res.sendStatus(400);
+        
+                    let streamInfo = getInternalStream(req.query.t);
+                    if (!streamInfo) return res.sendStatus(404);
+                    streamInfo.headers = req.headers;
+
+                    return stream(res, streamInfo);
                 case 'serverInfo':
                     return res.status(200).json({
                         version: version,

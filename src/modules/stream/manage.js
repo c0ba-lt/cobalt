@@ -5,17 +5,33 @@ import { nanoid } from 'nanoid';
 import { sha256 } from "../sub/crypto.js";
 import { streamLifespan } from "../config.js";
 
-const streamCache = new NodeCache({ stdTTL: streamLifespan/1000, useClones: false, checkperiod: 10, deleteOnExpire: true });
-const streamSalt = randomBytes(64).toString('hex');
-
-streamCache.on("expired", (key) => {
-    streamCache.del(key);
+const streamCache = new NodeCache({
+    stdTTL: streamLifespan / 1000,
+    useClones: false,
+    checkperiod: 10,
+    deleteOnExpire: true
 });
+
+const internalStreamCache = new NodeCache({
+    stdTTL: 300, // config?
+    useClones: false,
+    checkperiod: 10,
+    deleteOnExpire: true
+});
+
+const streamSalt = randomBytes(64).toString('hex');
 
 export function createStream(obj) {
     let streamID = nanoid(),
         exp = Math.floor(new Date().getTime()) + streamLifespan,
         ghmac = sha256(`${streamID},${obj.service},${exp}`, streamSalt);
+
+    if (typeof obj.u === 'string')
+        obj.u = createInternalStream(obj.u, obj.dispatcher);
+    else if (Array.isArray(obj.u)) {
+        for (const idx in obj.u)
+            obj.u[idx] = createInternalStream(obj.u[idx], obj.dispatcher);
+    } else throw 'invalid obj.u';
 
     if (!streamCache.has(streamID)) {
         streamCache.set(streamID, {
@@ -42,6 +58,22 @@ export function createStream(obj) {
     return `${process.env.apiURL || process.env.selfURL}api/stream?t=${streamID}&e=${exp}&h=${ghmac}`;
 }
 
+export function createInternalStream(url, dispatcher) {
+    let id = nanoid(),
+        exp = Math.floor(new Date().getTime()) + streamLifespan;
+
+    if (!streamCache.has(id)) {
+        internalStreamCache.set(id, {
+            id, url, dispatcher,
+            type: 'internal'
+        });
+    } else {
+        exp = internalStreamCache.get(streamID).exp;
+    }
+
+    return `http://127.0.0.1:${process.env.apiPort}/api/istream?t=${id}`;
+}
+
 export function verifyStream(id, hmac, exp) {
     try {
         let streamInfo = streamCache.get(id.toString());
@@ -56,4 +88,8 @@ export function verifyStream(id, hmac, exp) {
     } catch (e) {
         return { status: 500, body: { status: "error", text: "Internal Server Error" } };
     }
+}
+
+export function getInternalStream(id) {
+    return internalStreamCache.get(id);
 }

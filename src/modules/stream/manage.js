@@ -13,7 +13,7 @@ const streamCache = new NodeCache({
 });
 
 const internalStreamCache = new NodeCache({
-    stdTTL: 300, // config?
+    stdTTL: 3600, // config?
     useClones: false,
     checkperiod: 10,
     deleteOnExpire: true

@@ -3,6 +3,7 @@ export default function() {
     providers
     .split(',')
     .map(a => a.trim())
+    .filter(a => a)
     .forEach(async providerName => {
         try {
            await (await import('./providers/' + providerName + '.js')).default()

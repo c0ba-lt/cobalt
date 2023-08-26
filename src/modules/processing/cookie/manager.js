@@ -8,7 +8,7 @@ const WRITE_INTERVAL = 60000,
 
 let cookies = {}, dirty = false, intervalId;
 
-const setup = async () => {
+const setup = async (done) => {
     try {
         if (!cookiePath) return;
 
@@ -16,9 +16,9 @@ const setup = async () => {
         cookies = JSON.parse(cookies);
         intervalId = setInterval(writeChanges, WRITE_INTERVAL)
     } catch { /* no cookies for you */ }
-}
 
-setup();
+    done();
+}
 
 function writeChanges() {
     if (!dirty) return;
@@ -60,3 +60,5 @@ export function updateCookie(cookie, headers) {
     cookie.set(values);
     if (Object.keys(values).length) dirty = true
 }
+
+export let ready = new Promise(setup);

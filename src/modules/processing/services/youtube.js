@@ -1,8 +1,9 @@
 import { Innertube } from 'youtubei.js';
 import { maxVideoDuration } from '../../config.js';
 import { cleanString } from '../../sub/utils.js';
-import { getCookie } from '../cookie/manager.js';
+import { getCookie, ready as cookiesReady } from '../cookie/manager.js';
 
+await cookiesReady;
 const yt = await Innertube.create({
     cookie: getCookie('youtube')
 });

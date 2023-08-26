@@ -5,7 +5,7 @@ import { getCookie, ready as cookiesReady } from '../cookie/manager.js';
 
 await cookiesReady;
 const yt = await Innertube.create({
-    cookie: getCookie('youtube')
+    cookie: getCookie('youtube')?.toString()
 });
 
 const c = {

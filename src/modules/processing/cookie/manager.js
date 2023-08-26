@@ -15,9 +15,9 @@ const setup = async (done) => {
         cookies = await readFile(cookiePath, 'utf8');
         cookies = JSON.parse(cookies);
         intervalId = setInterval(writeChanges, WRITE_INTERVAL)
-    } catch { /* no cookies for you */ }
-
-    done();
+    }
+    catch { /* no cookies for you */ }
+    finally { done() }
 }
 
 function writeChanges() {

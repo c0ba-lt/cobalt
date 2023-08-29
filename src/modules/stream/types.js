@@ -35,7 +35,9 @@ export async function streamLiveRender(streamInfo, res) {
     try {
         if (streamInfo.urls.length !== 2) return fail(res);
 
-        let { body: audio } = await request(streamInfo.urls[1]);
+        let { body: audio } = await request(streamInfo.urls[1], {
+            maxRedirections: 16
+        });
 
         let format = streamInfo.filename.split('.')[streamInfo.filename.split('.').length - 1],
         args = [

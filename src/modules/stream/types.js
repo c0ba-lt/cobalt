@@ -113,17 +113,7 @@ export async function streamAudioOnly(streamInfo, res) {
         res.setHeader('Connection', 'keep-alive');
         res.setHeader('Content-Disposition', `attachment; filename="${streamInfo.filename}.${streamInfo.audioFormat}"`);
 
-        audio.pipe(ffmpegProcess.stdio[3]).on('error', () => {
-            ffmpegProcess.kill();
-            fail(res);
-        });
-        
-        audio.on('error', () => {
-            ffmpegProcess.kill();
-            fail(res);
-        });
-
-        ffmpegProcess.stdio[4].pipe(res);
+        ffmpegProcess.stdio[3].pipe(res);
 
         ffmpegProcess.on('disconnect', () => ffmpegProcess.kill());
         ffmpegProcess.on('close', () => ffmpegProcess.kill());

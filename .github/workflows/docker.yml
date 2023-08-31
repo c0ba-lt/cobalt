@@ -43,6 +43,7 @@ jobs:
           tags: |
             type=raw,value=latest
             type=raw,value=${{ steps.package-version.outputs.current-version }}
+            type=raw,value=${{ steps.package-version.outputs.current-version }}-${{ steps.commit-hash.outputs.commit_short }}
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Build and push Docker image

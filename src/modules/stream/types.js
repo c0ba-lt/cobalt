@@ -169,7 +169,10 @@ export async function streamVideoOnly(streamInfo, res) {
 export async function internalStream(streamInfo, res) {
     const req = await request(streamInfo.url, {
         dispatcher: streamInfo.dispatcher,
-        headers: streamInfo.headers,
+        headers: {
+            ...streamInfo.headers,
+            host: new URL(streamInfo.url).hostname,
+        },
         maxRedirections: 16
     });
 

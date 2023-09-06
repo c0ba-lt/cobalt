@@ -5,7 +5,7 @@ const isSafari = ua.match("safari/");
 const isFirefox = ua.match("firefox/");
 const isOldFirefox = ua.match("firefox/") && ua.split("firefox/")[1].split('.')[0] < 103;
 
-const version = 34;
+const version = 35;
 const regex = new RegExp(/https:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)/);
 const notification = `<div class="notification-dot"></div>`;
 
@@ -18,7 +18,14 @@ const switchers = {
     "vimeoDash": ["false", "true"],
     "audioMode": ["false", "true"]
 };
-const checkboxes = ["disableTikTokWatermark", "fullTikTokAudio", "muteAudio", "reduceTransparency", "disableAnimations"];
+const checkboxes = [
+    "disableTikTokWatermark",
+    "fullTikTokAudio",
+    "muteAudio",
+    "reduceTransparency",
+    "disableAnimations",
+    "disableMetadata"
+];
 const exceptions = { // used for mobile devices
     "vQuality": "720"
 };
@@ -376,6 +383,8 @@ async function download(url) {
         if (url.includes("youtube.com/") || url.includes("/youtu.be/")) req.vCodec = sGet("vCodec").slice(0, 4);
         if ((url.includes("tiktok.com/") || url.includes("douyin.com/")) && sGet("disableTikTokWatermark") === "true") req.isNoTTWatermark = true;
     }
+
+    if (sGet("disableMetadata") === "true") req.disableMetadata = true;
 
     let j = await fetch(`${apiURL}/api/json`, {
         method: "POST",

@@ -26,7 +26,7 @@ export default async function (host, patternMatch, url, lang, obj) {
         if (obj.country !== 'any' || process.env.PROXY_EVERYTHING === '1')
             dispatcher = randomProxyFrom(obj.country)
 
-        let r, isAudioOnly = !!obj.isAudioOnly;
+        let r, isAudioOnly = !!obj.isAudioOnly, disableMetadata = !!obj.disableMetadata;
 
         if (!testers[host]) return apiJSON(0, { t: errorUnsupported(lang) });
         if (!(testers[host](patternMatch))) return apiJSON(0, { t: brokenLink(lang, host) });
@@ -145,7 +145,7 @@ export default async function (host, patternMatch, url, lang, obj) {
 
         if (r.error) return apiJSON(0, { t: Array.isArray(r.error) ? loc(lang, r.error[0], r.error[1]) : loc(lang, r.error) });
 
-        return matchActionDecider(r, host, obj.aFormat, isAudioOnly, lang, isAudioMuted, dispatcher);
+        return matchActionDecider(r, host, obj.aFormat, isAudioOnly, lang, isAudioMuted, dispatcher, disableMetadata);
     } catch (e) {
         return apiJSON(0, { t: genericError(lang, host) })
     }

@@ -1,6 +1,7 @@
 version: '3.5'
 
 services:
+<<<<<<< HEAD
   cobalt-api:
       build: .
       init: true
@@ -20,12 +21,43 @@ services:
           - mullvad
   web:
         build: .
+=======
+    cobalt-api:
+        image: ghcr.io/wukko/cobalt:latest
+        restart: unless-stopped
+        container_name: cobalt-api
+
+        # if container doesn't run detached on your machine, uncomment the next line:
+        #tty: true
+
+        ports:
+            - 9000:9000/tcp
+            # if you're using a reverse proxy, uncomment the next line:
+            #- 127.0.0.1:9000:9000
+
+        environment:
+            - apiPort=9000
+            # replace apiURL with your instance's target url in same format
+            - apiURL=https://co.wuk.sh/
+            # replace apiName with your instance's distinctive name
+            - apiName=eu-nl
+            # if you want to use cookies when fetching data from services, uncomment the next line
+            #- cookiePath=cookies.json
+            # see src/modules/processing/cookie/cookies_example.json for example file.
+
+        labels:
+            - com.centurylinklabs.watchtower.scope=cobalt
+
+    cobalt-web:
+        image: ghcr.io/wukko/cobalt:latest
+>>>>>>> no-migration
         restart: unless-stopped
         container_name: cobalt-web
         ports:
             - 9001:9001/tcp
         environment:
             - webPort=9001
+<<<<<<< HEAD
             - webURL=https://co.wukko.me/
             - apiURL=https://co.wuk.sh/
 
@@ -77,3 +109,20 @@ services:
   ivpn_proxy:
         image: serjs/go-socks5-proxy
         network_mode: "container:ivpn"
+=======
+            # replace webURL with your instance's target url in same format
+            - webURL=https://cobalt.tools/
+            # replace apiURL with preferred api instance url
+            - apiURL=https://co.wuk.sh/
+
+        labels:
+            - com.centurylinklabs.watchtower.scope=cobalt
+
+    # update the cobalt image automatically with watchtower
+    watchtower:
+        image: ghcr.io/containrrr/watchtower
+        restart: unless-stopped
+        command: --cleanup --scope cobalt --interval 900
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+>>>>>>> no-migration

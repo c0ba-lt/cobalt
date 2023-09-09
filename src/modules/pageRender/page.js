@@ -499,21 +499,6 @@ export default function(obj) {
                 buttonText: t('ErrorPopupCloseButton')
             })}
         </div>
-        <div id="popup-migration-container" class="popup-from-bottom">
-            ${popup({
-                name: "migration",
-                standalone: true,
-                buttonOnly: true,
-                classes: ["small"],
-                header: {
-                    title: t('NewDomainWelcomeTitle'),
-                    emoji: emoji("😸", 78, 1, 1),
-                },
-                body: `<div id="desc-migration" class="desc-padding subtext desc-error">${t('NewDomainWelcome')}</div>`,
-                buttonText: t('ErrorPopupCloseButton')
-            })}
-            <div id="popup-backdrop-message" onclick="popup('message', 0)"></div>
-        </div>
         <div id="popup-backdrop" onclick="hideAllPopups()"></div>
         <div id="home" style="visibility:hidden">
             ${urgentNotice({

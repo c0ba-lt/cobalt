@@ -535,22 +535,7 @@ window.onload = () => {
         eid("url-input-area").value = pageQuery.get("u");
         button()
     }
-    if (pageQuery.has("migration")) {
-        if (pageQuery.has("settingsData") && !sGet("migrated")) {
-            let setUn = unpackSettings(pageQuery.get("settingsData"));
-            if (setUn !== null) {
-                if (setUn) {
-                    sSet("migrated", "true")
-                    eid("desc-migration").innerHTML += `<br/><br/>${loc.DataTransferSuccess}`
-                } else {
-                    eid("desc-migration").innerHTML += `<br/><br/>${loc.DataTransferError}`
-                }
-            }
-        }
-        loadSettings();
-        detectColorScheme();
-        popup("migration", 1);
-    }
+
     window.history.replaceState(null, '', window.location.pathname);
 
     notificationCheck();

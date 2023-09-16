@@ -19,6 +19,8 @@ import instagram from "./services/instagram.js";
 import vine from "./services/vine.js";
 import pinterest from "./services/pinterest.js";
 import streamable from "./services/streamable.js";
+import twitch from "./services/twitch.js";
+import rutube from "./services/rutube.js";
 
 export default async function (host, patternMatch, url, lang, obj) {
     try {
@@ -123,6 +125,20 @@ export default async function (host, patternMatch, url, lang, obj) {
                     id: patternMatch["id"],
                     quality: obj.vQuality,
                     isAudioOnly: isAudioOnly,
+                });
+                break;
+            case "twitch":
+                r = await twitch({
+                    clipId: patternMatch["clip"] ? patternMatch["clip"] : false,
+                    quality: obj.vQuality,
+                    isAudioOnly: obj.isAudioOnly
+                });
+                break;
+            case "rutube":
+                r = await rutube({
+                    id: patternMatch["id"],
+                    quality: obj.vQuality,
+                    isAudioOnly: isAudioOnly
                 });
                 break;
             default:

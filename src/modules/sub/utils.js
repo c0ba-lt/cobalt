@@ -50,7 +50,7 @@ export function metadataManager(obj) {
     return commands;
 }
 export function cleanURL(url, host) {
-    switch(host) {
+    switch (host) {
         case "vk":
             url = url.includes('clip') ? url.split('&')[0] : url.split('?')[0];
             break;
@@ -70,9 +70,6 @@ export function cleanURL(url, host) {
         url = url.replaceAll(forbiddenChars[i], '')
     }
     url = url.replace('https//', 'https://')
-    if (url.includes('youtube.com/shorts/')) {
-        url = url.split('?')[0].replace('shorts/', 'watch?v=');
-    }
     return url.slice(0, 128)
 }
 export function cleanString(string) {

@@ -1,4 +1,4 @@
-import { checkbox, collapsibleList, explanation, footerButtons, multiPagePopup, popup, popupWithBottomButtons, sep, settingsCategory, switcher, socialLink, socialLinks, urgentNotice, keyboardShortcuts, webLoc } from "./elements.js";
+import { checkbox, collapsibleList, explanation, footerButtons, multiPagePopup, popup, popupWithBottomButtons, sep, settingsCategory, switcher, socialLink, socialLinks, urgentNotice, keyboardShortcuts, webLoc, sponsoredList } from "./elements.js";
 import { services as s, authorInfo, version, repo, donations, supportedAudio } from "../config.js";
 import { getCommitInfo } from "../sub/currentCommit.js";
 import loc from "../../localization/manager.js";
@@ -164,7 +164,17 @@ export default function(obj) {
                             title: `${emoji("📑")} ${t("CollapseLegal")}`,
                             body: t("FairUse")
                         }])
-                    }]
+                    },
+                    ...(process.env.showSponsors ?
+                    [{
+                        text: t("SponsoredBy"),
+                        classes: ["sponsored-by-text"],
+                        nopadding: true
+                    }, {
+                        text: sponsoredList(),
+                        raw: true
+                    }] : []
+                    )]
                 })
             }, {
                 name: "changelog",
@@ -322,7 +332,8 @@ export default function(obj) {
                     }])
                 })
                 + settingsCategory({
-                    name: t('SettingsCodecSubtitle'),
+                    name: "codec",
+                    title: t('SettingsCodecSubtitle'),
                     body: switcher({
                         name: "vCodec",
                         explanation: t('SettingsCodecDescription'),
@@ -339,7 +350,8 @@ export default function(obj) {
                     })
                 })
                 + settingsCategory({
-                    name: t('SettingsVimeoPrefer'),
+                    name: "vimeo",
+                    title: t('SettingsVimeoPrefer'),
                     body: switcher({
                         name: "vimeoDash",
                         explanation: t('SettingsVimeoPreferDescription'),
@@ -415,6 +427,43 @@ export default function(obj) {
                             text: t('SettingsThemeLight')
                         }]
                     })
+                })
+                + settingsCategory({
+                    name: "filename",
+                    title: t('FilenameTitle'),
+                    body: switcher({
+                        name: "filenamePattern",
+                        items: [{
+                            action: "classic",
+                            text: t('FilenamePatternClassic')
+                        }, {
+                            action: "basic",
+                            text: t('FilenamePatternBasic')
+                        }, {
+                            action: "pretty",
+                            text: t('FilenamePatternPretty')
+                        }, {
+                            action: "nerdy",
+                            text: t('FilenamePatternNerdy')
+                        }]
+                    })
+                    + `<div id="filename-preview">
+                        <div id="video-filename" class="filename-item line">
+                            ${emoji('🎞️', 32, 1, 1)}
+                            <div class="filename-container">
+                                <div class="filename-label">${t('Preview')}</div>
+                                <div id="video-filename-text"></div>
+                            </div>
+                        </div>
+                        <div id="audio-filename" class="filename-item">
+                            ${emoji('🎧', 32, 1, 1)}
+                            <div class="filename-container">
+                                <div class="filename-label">${t('Preview')}</div>
+                                <div id="audio-filename-text"></div>
+                            </div>
+                        </div>
+                    </div>`
+                    + explanation(t('FilenameDescription'))
                 })
                 + settingsCategory({
                     name: "accessibility",
@@ -498,8 +547,8 @@ export default function(obj) {
         <div id="popup-backdrop" onclick="hideAllPopups()"></div>
         <div id="home" style="visibility:hidden">
             ${urgentNotice({
-                emoji: "👾",
-                text: t("UrgentFeatureUpdate71"),
+                emoji: "😸",
+                text: t("UrgentFilenameUpdate"),
                 visible: true,
                 action: "popup('about', 1, 'changelog')"
             })}
@@ -549,7 +598,7 @@ export default function(obj) {
         </div>
     </body>
     <script type="text/javascript">
-        let apiURL = '${process.env.apiURL ? process.env.apiURL.slice(0, -1) : ''}';
+        let defaultApiUrl = '${process.env.apiURL ? process.env.apiURL : ''}';
         const loc = ${webLoc(t,
         [
             'ErrorNoInternet',
@@ -566,7 +615,10 @@ export default function(obj) {
             'ClipboardErrorNoPermission',
             'ClipboardErrorFirefox',
             'DataTransferSuccess',
-            'DataTransferError'
+            'DataTransferError',
+            'FilenamePreviewVideoTitle',
+            'FilenamePreviewAudioTitle',
+            'FilenamePreviewAudioAuthor'
         ])}
     </script>
     <script type="text/javascript" src="cobalt.js"></script>

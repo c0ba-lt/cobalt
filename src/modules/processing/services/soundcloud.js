@@ -69,12 +69,19 @@ export default async function(obj) {
     let file = await fetch(fileUrl).then(async (r) => { return (await r.json()).url }).catch(() => { return false });
     if (!file) return { error: 'ErrorCouldntFetch' };
 
+    let fileMetadata = {
+        title: cleanString(json.title.trim()),
+        artist: cleanString(json.user.username.trim()),
+    }
+
     return {
         urls: file,
-        audioFilename: `soundcloud_${json.id}`,
-        fileMetadata: {
-            title: cleanString(json.title.trim()),
-            artist: cleanString(json.user.username.trim()),
-        }
+        filenameAttributes: {
+            service: "soundcloud",
+            id: json.id,
+            title: fileMetadata.title,
+            author: fileMetadata.artist
+        },
+        fileMetadata: fileMetadata
     }
 }

@@ -28,7 +28,7 @@ export const testers = {
 
     "instagram": (patternMatch) => (patternMatch.postId?.length <= 12) 
                                     || (patternMatch.username?.length <= 30 && patternMatch.storyId?.length <= 24),
-    
+
     "vine": (patternMatch) => (patternMatch["id"] && patternMatch["id"].length <= 12),
 
     "pinterest": (patternMatch) => (patternMatch["id"] && patternMatch["id"].length <= 128),

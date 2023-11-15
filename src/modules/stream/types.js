@@ -73,38 +73,32 @@ export async function streamLiveRender(streamInfo, res) {
         args = [
             '-loglevel', '-8',
             '-threads', `${getThreads()}`,
-            '-protocol_whitelist', 'tcp,tls,http,https,pipe',
+            '-i', streamInfo.urls[0],
             '-i', 'pipe:3',
-            '-i', 'pipe:4',
             '-map', '0:v',
             '-map', '1:a',
         ];
 
         args = args.concat(ffmpegArgs[format]);
         if (streamInfo.metadata) args = args.concat(metadataManager(streamInfo.metadata));
-        args.push('-f', format, 'pipe:5');
+        args.push('-f', format, 'pipe:4');
 
         process = spawn(ffmpeg, args, {
             windowsHide: true,
             stdio: [
                 'inherit', 'inherit', 'inherit',
-                'pipe', 'pipe', 'pipe'
+                'pipe', 'pipe'
             ],
         });
 
-        const [,,, videoInput, audioInput, muxOutput] = process.stdio;
+        const [,,, audioInput, muxOutput] = process.stdio;
 
         res.setHeader('Connection', 'keep-alive');
         res.setHeader('Content-Disposition', contentDisposition(streamInfo.filename));
 
-        request(streamInfo.urls[0], { maxRedirections: 16 }).then(
-            res => pipe(res.body, videoInput, shutdown)
-        )
-
-        fetch(streamInfo.urls[1], { maxRedirections: 16 }).then(
-            res => pipe(res.body, audioInput, shutdown)
-        )
-
+        audio.on('error', shutdown);
+        audioInput.on('error', shutdown);
+        audio.pipe(audioInput);
         pipe(muxOutput, res, shutdown);
 
         process.on('close', shutdown);
@@ -113,19 +107,16 @@ export async function streamLiveRender(streamInfo, res) {
         shutdown();
     }
 }
-export async function streamAudioOnly(streamInfo, res) {
+
+export function streamAudioOnly(streamInfo, res) {
     let process;
     const shutdown = () => (killProcess(process), closeResponse(res));
 
     try {
-        let { body: stream } = await fetch(streamInfo.urls);
-        const audio = Readable.fromWeb(stream)
-
         let args = [
             '-loglevel', '-8',
             '-threads', `${getThreads()}`,
-            '-protocol_whitelist', 'tcp,tls,http,https,pipe',
-            '-i', 'pipe:3'
+            '-i', streamInfo.urls
         ]
 
         if (streamInfo.metadata) {
@@ -143,21 +134,21 @@ export async function streamAudioOnly(streamInfo, res) {
         args = args.concat(arg);
 
         if (ffmpegArgs[streamInfo.audioFormat]) args = args.concat(ffmpegArgs[streamInfo.audioFormat]);
-        args.push('-f', streamInfo.audioFormat === "m4a" ? "ipod" : streamInfo.audioFormat, 'pipe:4');
+        args.push('-f', streamInfo.audioFormat === "m4a" ? "ipod" : streamInfo.audioFormat, 'pipe:3');
 
         process = spawn(ffmpeg, args, {
             windowsHide: true,
             stdio: [
                 'inherit', 'inherit', 'inherit',
-                'pipe', 'pipe'
+                'pipe'
             ],
         });
 
-        const [,,, audioInput, muxOutput] = process.stdio;
+        const [,,, muxOutput] = process.stdio;
 
         res.setHeader('Connection', 'keep-alive');
         res.setHeader('Content-Disposition', contentDisposition(`${streamInfo.filename}.${streamInfo.audioFormat}`));
-        pipe(audio, audioInput, shutdown);
+
         pipe(muxOutput, res, shutdown);
         res.on('finish', shutdown);
     } catch {
@@ -173,8 +164,7 @@ export function streamVideoOnly(streamInfo, res) {
         let args = [
             '-loglevel', '-8',
             '-threads', `${getThreads()}`,
-            '-protocol_whitelist', 'tcp,tls,http,https,pipe',
-            '-i', 'pipe:3',
+            '-i', streamInfo.urls,
             '-c', 'copy'
         ]
         if (streamInfo.mute) args.push('-an');
@@ -182,22 +172,21 @@ export function streamVideoOnly(streamInfo, res) {
 
         let format = streamInfo.filename.split('.')[streamInfo.filename.split('.').length - 1];
         if (format === "mp4") args.push('-movflags', 'faststart+frag_keyframe+empty_moov');
-        args.push('-f', format, 'pipe:4');
+        args.push('-f', format, 'pipe:3');
 
         process = spawn(ffmpeg, args, {
             windowsHide: true,
             stdio: [
                 'inherit', 'inherit', 'inherit',
-                'pipe', 'pipe'
+                'pipe'
             ],
         });
 
-        const [,,, videoInput, muxOutput] = process.stdio;
+        const [,,, muxOutput] = process.stdio;
 
         res.setHeader('Connection', 'keep-alive');
         res.setHeader('Content-Disposition', contentDisposition(streamInfo.filename));
 
-        pipe(video, videoInput, shutdown);
         pipe(muxOutput, res, shutdown);
 
         process.on('close', shutdown);

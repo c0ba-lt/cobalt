@@ -72,7 +72,9 @@ export async function streamLiveRender(streamInfo, res) {
         let format = streamInfo.filename.split('.')[streamInfo.filename.split('.').length - 1],
         args = [
             '-loglevel', '-8',
+            
             '-threads', `${getThreads()}`,
+            '-multiple_requests', '1',
             '-i', streamInfo.urls[0],
             '-i', 'pipe:3',
             '-map', '0:v',

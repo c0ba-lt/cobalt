@@ -18,7 +18,7 @@ async function getAccessToken() {
     const values = cookie.values(),
           needRefresh = !values.access_token
                         || !values.expiry
-                        || Number(values.expiry) > new Date().getTime();
+                        || Number(values.expiry) < new Date().getTime();
     if (!needRefresh) return values.access_token;
 
     const data = await fetch('https://www.reddit.com/api/v1/access_token', {
@@ -48,7 +48,7 @@ async function getAccessToken() {
 }
 
 export default async function(obj) {
-    const url = new URL(`https://www.reddit.com/r/${obj.sub}/comments/${obj.id}/${obj.title}.json`);
+    const url = new URL(`https://www.reddit.com/r/${obj.sub}/comments/${obj.id}.json`);
 
     const accessToken = await getAccessToken();
     if (accessToken) url.hostname = 'oauth.reddit.com';

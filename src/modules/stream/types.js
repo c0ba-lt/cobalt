@@ -72,15 +72,13 @@ export async function streamLiveRender(streamInfo, res) {
     try {
         if (streamInfo.urls.length !== 2) return shutdown();
 
-        const { body: audio } = await request(streamInfo.urls[1], {
-            maxRedirections: 16, signal: abortController.signal
-        });
-
         let format = streamInfo.filename.split('.')[streamInfo.filename.split('.').length - 1],
         args = [
             '-loglevel', '-8',
+            '-multiple_requests', '1',
             '-i', streamInfo.urls[0],
-            '-i', 'pipe:3',
+            '-multiple_requests', '1',
+            '-i', streamInfo.urls[1],
             '-map', '0:v',
             '-map', '1:a',
         ];
@@ -89,24 +87,20 @@ export async function streamLiveRender(streamInfo, res) {
         if (streamInfo.metadata) {
             args = args.concat(metadataManager(streamInfo.metadata))
         }
-        args.push('-f', format, 'pipe:4');
+        args.push('-f', format, 'pipe:3');
 
         process = spawn(ffmpeg, args, {
             windowsHide: true,
             stdio: [
                 'inherit', 'inherit', 'inherit',
-                'pipe', 'pipe'
+                'pipe'
             ],
         });
 
-        const [,,, audioInput, muxOutput] = process.stdio;
+        const [,,, muxOutput] = process.stdio;
 
         res.setHeader('Connection', 'keep-alive');
         res.setHeader('Content-Disposition', contentDisposition(streamInfo.filename));
-
-        audio.on('error', shutdown);
-        audioInput.on('error', shutdown);
-        audio.pipe(audioInput);
         pipe(muxOutput, res, shutdown);
 
         process.on('close', shutdown);

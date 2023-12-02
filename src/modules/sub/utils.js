@@ -9,7 +9,7 @@ const apiVar = {
     },
     booleanOnly: ["isAudioOnly", "isNoTTWatermark", "isTTFullAudio", "isAudioMuted", "dubLang", "vimeoDash", "disableMetadata"]
 }
-const forbiddenChars = ['}', '{', '(', ')', '\\', '%', '>', '<', '^', '*', '!', '~', ';', ':', ',', '`', '[', ']', '#', '$', '"', "'", "@", '=='];
+const forbiddenChars = ['}', '{', '(', ')', '\\', '>', '<', '^', '*', '!', '~', ';', ':', ',', '`', '[', ']', '#', '$', '"', "'", "@", '=='];
 const forbiddenCharsString = ['}', '{', '%', '>', '<', '^', ';', '`', '$', '"', "@", '='];
 
 export function apiJSON(type, obj) {
@@ -129,18 +129,6 @@ export function checkJSONPost(obj) {
         return def
     } catch (e) {
         return false
-    }
-}
-export function getThreads() {
-    try {
-        if (process.env.ffmpegThreads && process.env.ffmpegThreads.length <= 3
-            && (Number(process.env.ffmpegThreads) >= 0 && Number(process.env.ffmpegThreads) <= 256)) {
-            return process.env.ffmpegThreads
-        } else {
-            return '0'
-        }
-    } catch (e) {
-        return '0'
     }
 }
 export function cleanHTML(html) {

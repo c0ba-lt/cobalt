@@ -1,0 +1,8 @@
+version: "1"
+rules:
+  - base: current
+    upstream: wukko:current
+    mergeMethod: hardreset
+  - base: coprox
+    upstream: wukko:current
+    mergeMethod: hardreset

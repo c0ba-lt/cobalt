@@ -1,3 +1,4 @@
+import { normalizeURL } from "../processing/url.js";
 import { createStream } from "../stream/manage.js";
 
 const apiVar = {
@@ -35,11 +36,13 @@ export function apiJSON(type, obj) {
                         break;
                 }
                 return { status: 200, body: { status: "picker", pickerType: pickerType, picker: obj.picker, audio: audio } };
+            case 6: // critical error, action should be taken by balancer/other server software
+                return { status: 500, body: { status: "error", text: obj.t, critical: true } };
             default:
                 return { status: 400, body: { status: "error", text: "Bad Request" } };
         }
     } catch (e) {
-        return { status: 500, body: { status: "error", text: "Internal Server Error" } };
+        return { status: 500, body: { status: "error", text: "Internal Server Error", critical: true } };
     }
 }
 export function metadataManager(obj) {
@@ -50,29 +53,7 @@ export function metadataManager(obj) {
     for (let i in keys) { if (tags.includes(keys[i])) commands.push('-metadata', `${keys[i]}=${obj[keys[i]]}`) }
     return commands;
 }
-export function cleanURL(url, host) {
-    switch (host) {
-        case "vk":
-            url = url.includes('clip') ? url.split('&')[0] : url.split('?')[0];
-            break;
-        case "youtube":
-            url = url.split('&')[0];
-            break;
-        case "tiktok":
-            url = url.replace(/@([a-zA-Z]+(\.[a-zA-Z]+)+)/, "@a")
-        case "pinterest":
-            url = url.replace(/:\/\/(?:www.)pinterest(?:\.[a-z.]+)/, "://pinterest.com")
-        default:
-            url = url.split('?')[0];
-            if (url.substring(url.length - 1) === "/") url = url.substring(0, url.length - 1);
-            break;
-    }
-    for (let i in forbiddenChars) {
-        url = url.replaceAll(forbiddenChars[i], '')
-    }
-    url = url.replace('https//', 'https://')
-    return url.slice(0, 128)
-}
+
 export function cleanString(string) {
     for (let i in forbiddenCharsString) {
         string = string.replaceAll("/", "_").replaceAll(forbiddenCharsString[i], '')
@@ -92,6 +73,7 @@ export function unicodeDecode(str) {
 }
 export function checkJSONPost(obj) {
     let def = {
+        url: normalizeURL(decodeURIComponent(obj.url)),
         vCodec: "h264",
         vQuality: "720",
         aFormat: "mp3",
@@ -119,12 +101,8 @@ export function checkJSONPost(obj) {
             }
         }
 
-        if (def.dubLang) def.dubLang = verifyLanguageCode(obj.dubLang);
-
-        obj["url"] = decodeURIComponent(String(obj["url"]));
-        let hostname = obj["url"].replace("https://", "").replace(' ', '').split('&')[0].split("/")[0].split("."),
-            host = hostname[hostname.length - 2];
-        def["url"] = encodeURIComponent(cleanURL(obj["url"], host));
+        if (def.dubLang)
+            def.dubLang = verifyLanguageCode(obj.dubLang);
 
         return def
     } catch (e) {

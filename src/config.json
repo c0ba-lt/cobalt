@@ -8,56 +8,59 @@
         "contact": "https://wukko.me/contacts",
         "support": {
             "default": {
+                "email": {
+                    "emoji": "📧",
+                    "url": "mailto:support@cobalt.tools",
+                    "name": "support@cobalt.tools"
+                },
                 "twitter": {
                     "emoji": "🐦",
                     "url": "https://twitter.com/justusecobalt",
-                    "handle": "@justusecobalt"
+                    "name": "@justusecobalt"
                 },
                 "discord": {
                     "emoji": "👾",
                     "url": "https://discord.gg/pQPt8HBUPu",
-                    "handle": "cobalt community server"
+                    "name": "cobalt discord server"
                 },
                 "mastodon": {
                     "emoji": "🐘",
                     "url": "https://wetdry.world/@cobalt",
-                    "handle": "@cobalt@wetdry.world"
-                },
-                "support email": {
-                    "emoji": "📧",
-                    "url": "mailto:support@cobalt.tools",
-                    "handle": "support@cobalt.tools"
+                    "name": "@cobalt@wetdry.world"
                 }
             },
             "ru": {
-                "канал в telegram": {
+                "telegram": {
                     "emoji": "📬",
                     "url": "https://t.me/justusecobalt_ru",
-                    "handle": "@justusecobalt_ru"
+                    "name": "канал в telegram"
                 },
-                "поддержка по почте": {
+                "email": {
                     "emoji": "📧",
                     "url": "mailto:support@cobalt.tools",
-                    "handle": "support@cobalt.tools"
+                    "name": "support@cobalt.tools"
                 }
             }
         }
     },
     "donations": {
         "crypto": {
-            "bitcoin": "18PKf6N2cHrmSzz9ZzTSvDd2jAkqGC7SxA",
             "monero": "4B1SNB6s8Pq1hxjNeKPEe8Qa8EP3zdL16Sqsa7QDoJcUecKQzEj9BMxWnEnTGu12doKLJBKRDUqnn6V9qfSdXpXi3Nw5Uod",
+            "bitcoin": "18PKf6N2cHrmSzz9ZzTSvDd2jAkqGC7SxA",
+            "litecoin": "ltc1qvp0xhrk2m7pa6p6z844qcslfyxv4p3vf95rhna",
             "ethereum": "0x4B4cF23051c78c7A7E0eA09d39099621c46bc302",
-            "ton": "UQA3SO-hHZq1oCCT--u6or6ollB8fd2o52aD8mXiLk9iDZd3",
+            "usdt-erc20": "0x4B4cF23051c78c7A7E0eA09d39099621c46bc302",
             "usdt-trc20": "TVbx7YT3rBfu931Gxko6pRfXtedYqbgnBB",
-            "litecoin": "ltc1qvp0xhrk2m7pa6p6z844qcslfyxv4p3vf95rhna"
+            "ton": "UQA3SO-hHZq1oCCT--u6or6ollB8fd2o52aD8mXiLk9iDZd3"
         },
         "links": {
             "boosty": "https://boosty.to/wukko/donate"
         }
     },
     "links": {
-        "saveToGalleryShortcut": "https://www.icloud.com/shortcuts/b401917928fd407daf1db0fd07eb7e78"
+        "saveToGalleryShortcut": "https://www.icloud.com/shortcuts/b401917928fd407daf1db0fd07eb7e78",
+        "statusPage": "https://status.cobalt.tools/",
+        "troubleshootingGuide": "https://github.com/wukko/cobalt/blob/current/docs/troubleshooting.md"
     },
     "celebrations": {
         "01-01": "🎄",

@@ -1,5 +1,6 @@
 import { normalizeURL } from "../processing/url.js";
 import { createStream } from "../stream/manage.js";
+import ipaddr from "ipaddr.js";
 
 const apiVar = {
     allowed: {
@@ -8,7 +9,7 @@ const apiVar = {
         aFormat: ["best", "mp3", "ogg", "wav", "opus"],
         filenamePattern: ["classic", "pretty", "basic", "nerdy"]
     },
-    booleanOnly: ["isAudioOnly", "isNoTTWatermark", "isTTFullAudio", "isAudioMuted", "dubLang", "vimeoDash", "disableMetadata"]
+    booleanOnly: ["isAudioOnly", "isNoTTWatermark", "isTTFullAudio", "isAudioMuted", "dubLang", "vimeoDash", "disableMetadata", "twitterGif"]
 }
 const forbiddenChars = ['}', '{', '(', ')', '\\', '>', '<', '^', '*', '!', '~', ';', ':', ',', '`', '[', ']', '#', '$', '"', "'", "@", '=='];
 const forbiddenCharsString = ['}', '{', '%', '>', '<', '^', ';', '`', '$', '"', "@", '='];
@@ -84,7 +85,8 @@ export function checkJSONPost(obj) {
         isAudioMuted: false,
         disableMetadata: false,
         dubLang: false,
-        vimeoDash: false
+        vimeoDash: false,
+        twitterGif: false
     }
     try {
         let objKeys = Object.keys(obj);
@@ -108,6 +110,19 @@ export function checkJSONPost(obj) {
     } catch (e) {
         return false
     }
+}
+export function getIP(req) {
+    const strippedIP = req.ip.replace(/^::ffff:/, '');
+    const ip = ipaddr.parse(strippedIP);
+    if (ip.kind() === 'ipv4') {
+        return strippedIP;
+    }
+
+    const prefix = 56;
+    const v6Bytes = ip.toByteArray();
+          v6Bytes.fill(0, prefix / 8);
+
+    return ipaddr.fromByteArray(v6Bytes).toString();
 }
 export function cleanHTML(html) {
     let clean = html.replace(/ {4}/g, '');

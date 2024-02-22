@@ -1,4 +1,4 @@
-const version = 40;
+const version = 41;
 
 const ua = navigator.userAgent.toLowerCase();
 const isIOS = ua.match("iphone os");
@@ -30,6 +30,7 @@ const checkboxes = [
     "reduceTransparency",
     "disableAnimations",
     "disableMetadata",
+    "twitterGif",
 ];
 const exceptions = { // used for mobile devices
     "vQuality": "720"
@@ -220,11 +221,11 @@ function popup(type, action, text) {
                 if (navigator.canShare) eid("pd-share").style.display = "flex";
                 break;
             case "picker":
+                eid("picker-title").innerHTML = loc.MediaPickerTitle;
+                eid("picker-subtitle").innerHTML = isMobile ? loc.MediaPickerExplanationPhone : loc.MediaPickerExplanationPC;
+
                 switch (text.type) {
                     case "images":
-                        eid("picker-title").innerHTML = loc.ImagePickerTitle;
-                        eid("picker-subtitle").innerHTML = isMobile ? loc.ImagePickerExplanationPhone : loc.ImagePickerExplanationPC;
-
                         eid("picker-holder").classList.remove("various");
 
                         eid("picker-download").href = text.audio;
@@ -235,14 +236,11 @@ function popup(type, action, text) {
                             `<a class="picker-image-container" ${
                                 isIOS ? `onClick="share('${text.arr[i]["url"]}')"` : `href="${text.arr[i]["url"]}" target="_blank"`
                             }>` +
-                                `<img class="picker-image" src="${text.arr[i]["url"]}" onerror="this.parentNode.style.display='none'"></img>` +
+                                `<img class="picker-image" src="${text.arr[i]["url"]}" onerror="this.parentNode.style.display='none'">` +
                             `</a>`
                         }
                         break;
                     default:
-                        eid("picker-title").innerHTML = loc.MediaPickerTitle;
-                        eid("picker-subtitle").innerHTML = isMobile ? loc.MediaPickerExplanationPhone : loc.MediaPickerExplanationPC;
-
                         eid("picker-holder").classList.add("various");
 
                         for (let i in text.arr) {
@@ -251,8 +249,8 @@ function popup(type, action, text) {
                                 isIOS ? `onClick="share('${text.arr[i]["url"]}')"` : `href="${text.arr[i]["url"]}" target="_blank"`
                             }>` + 
                                 `<div class="picker-element-name">${text.arr[i].type}</div>` +
-                                `<div class="imageBlock"></div>` +
-                                `<img class="picker-image" src="${text.arr[i]["thumb"]}" onerror="this.style.display='none'"></img>` +
+                                (text.arr[i].type === 'photo' ? '' : '<div class="imageBlock"></div>') +
+                                `<img class="picker-image" src="${text.arr[i]["thumb"]}" onerror="this.style.display='none'">` +
                             `</a>`
                         }
                         eid("picker-download").classList.remove("visible");
@@ -381,6 +379,7 @@ async function download(url) {
     }
 
     if (sGet("disableMetadata") === "true") req.disableMetadata = true;
+    if (sGet("twitterGif") === "true") req.twitterGif = true;
 
     let j = await fetch(`${apiURL}/api/json`, {
         method: "POST",
@@ -599,6 +598,11 @@ window.onload = () => {
     window.history.replaceState(null, '', window.location.pathname);
 
     notificationCheck();
+
+    // fix for animations not working in Safari
+    if (isIOS) {
+        document.addEventListener('touchstart', () => {}, true);
+    }
 }
 eid("url-input-area").addEventListener("keydown", (e) => {
     button();

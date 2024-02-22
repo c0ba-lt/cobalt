@@ -72,7 +72,7 @@ const requestTweet = (tweetId, token) => {
     })
 }
 
-export default async function({ id, index }) {
+export default async function({ id, index, toGif }) {
     let guestToken = await getGuestToken();
     if (!guestToken) return { error: 'ErrorCouldntFetch' };
 
@@ -86,7 +86,18 @@ export default async function({ id, index }) {
     tweet = await tweet.json();
 
     // {"data":{"tweetResult":{"result":{"__typename":"TweetUnavailable","reason":"Protected"}}}}
-    if (tweet?.data?.tweetResult?.result?.__typename !== "Tweet") {
+    const tweetTypename = tweet?.data?.tweetResult?.result?.__typename;
+
+    if (tweetTypename === "TweetUnavailable") {
+        const reason = tweet?.data?.tweetResult?.result?.reason;
+        switch(reason) {
+            case "Protected":
+                return { error: 'ErrorTweetProtected' }
+            case "NsfwLoggedOut":
+                return { error: 'ErrorTweetNSFW' }
+        }
+    }
+    if (tweetTypename !== "Tweet") {
         return { error: 'ErrorTweetUnavailable' }
     }
 
@@ -110,23 +121,27 @@ export default async function({ id, index }) {
                 type: needsFixing(media[0]) ? "remux" : "normal",
                 urls: bestQuality(media[0].video_info.variants),
                 filename: `twitter_${id}.mp4`,
-                audioFilename: `twitter_${id}_audio`
+                audioFilename: `twitter_${id}_audio`,
+                isGif: media[0].type === "animated_gif"
             };
         default:
-            const picker = media.map((video, i) => {
-                let url = bestQuality(video.video_info.variants);
-                if (needsFixing(video)) {
+            const picker = media.map((content, i) => {
+                let url = bestQuality(content.video_info.variants);
+                const shouldRenderGif = content.type === 'animated_gif' && toGif;
+
+                if (needsFixing(content) || shouldRenderGif) {
                     url = createStream({
                         service: 'twitter',
-                        type: 'remux',
+                        type: shouldRenderGif ? 'gif' : 'remux',
                         u: url,
                         filename: `twitter_${id}_${i + 1}.mp4`
                     })
                 }
+
                 return {
                     type: 'video',
                     url,
-                    thumb: video.media_url_https,
+                    thumb: content.media_url_https,
                 }
             });
             return { picker };

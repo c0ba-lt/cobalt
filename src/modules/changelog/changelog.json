@@ -1,21 +1,34 @@
 {
     "current": {
+        "version": "7.9",
+        "date": "January 17, 2024",
+        "title": "twitter gifs, pinterest, ok.ru, and more!",
+        "banner": {
+            "file": "meowthball.webp",
+            "alt": "meowth rolling on a big catnip ball",
+            "width": 478,
+            "height": 350
+        },
+        "content": "yes, you read that right. cobalt now lets you convert any twitter gif to an actual .gif file! (finally)\njust go to settings and enable this feature :)\n\nservice improvements:\n*; added an option to <a class=\"text-backdrop link\" href=\"{repo}/issues/250\" target=\"_blank\">convert gifs from twitter</a> into actual .gif format. files will be bigger and lower quality, but maybe you want that.\n*; pinterest support has been completely redone, now all videos (<a class=\"text-backdrop link\" href=\"{repo}/issues/160\" target=\"_blank\">and even pin.it links</a>) are supported.\n*; added <a class=\"text-backdrop link\" href=\"{repo}/issues/322\" target=\"_blank\">support for ok.ru</a> in case you're a russian grandma.\n*; now processing <a class=\"text-backdrop link\" href=\"{repo}/issues/318\" target=\"_blank\">all reddit links</a> (including old.reddit.com).\n*; <a class=\"text-backdrop link\" href=\"{repo}/issues/316\" target=\"_blank\">instagram live vods</a> are now supported.\n*; fixed a <a class=\"text-backdrop link\" href=\"{repo}/issues/289\" target=\"_blank\">rare vimeo bug</a> related to 1440p videos.\n\nother improvements:\n*; ui fade in animation is no longer present if you've disabled animations.\n*; all images now have alt descriptions.\n*; cobalt html is now <a class=\"text-backdrop link\" href=\"{repo}/issues/317\" target=\"_blank\">biblically correct</a> and follows the html spec.\n*; lots of cleaning up.\n\npatches since 7.8:\n*; shift+key <a class=\"text-backdrop link\" href=\"{repo}/issues/288\" target=\"_blank\">shortcuts are now ignored</a> if url bar is focused.\n*; longer soundcloud links are now supported, also catching more tiktok-related errors.\n*; removed mastodon from support links as that account is no longer active.\n*; added ability to download a specific video from multi media tweets and support for /mediaViewer links.\n*; fixed <a class=\"text-backdrop link\" href=\"{repo}/issues/309\" target=\"_blank\">modal blurriness</a> in chromium.\n*; minor html changes (road to biblically correct one).\n\nlots of long-awaited updates (especially twitter gifs), hope you enjoy them and have a great day :D"
+    },
+    "history": [{
         "version": "7.8",
         "date": "December 25, 2023",
         "title": "new years clean up! bug fixes and fresh look for the home page",
         "banner": {
             "file": "catroomba.webp",
+            "alt": "a cat riding a roomba vacuum",
             "width": 300,
             "height": 168
         },
         "content": "merry christmas and happy new year! this update fixes several (very annoying) bugs to help you enjoy your holidays better.\n\nyou might have already noticed, but we've refreshed the home page on desktop and mobile! less space wasted, more pleasant to look at. let us know if you like it or not :D\n\nservice improvements:\n*; <a class=\"text-backdrop link\" href=\"{repo}/issues/264\" target=\"_blank\">#264</a> anything that includes a period in the url should be possible to download (including instagram stories).\n*; <a class=\"text-backdrop link\" href=\"{repo}/issues/273\" target=\"_blank\">#73</a> soundcloud: falling back to mp3 instead of refusing to download the song at all.\n*; <a class=\"text-backdrop link\" href=\"{repo}/issues/275\" target=\"_blank\">#275</a> youtube: query parameters are parsed and handled correctly, all links should be supported, no matter where v query is located.\n*; tlds are parsed and validated correctly (e.g. \"pinterest.co.uk\" works now).\n*; fixvx.com links are now supported.\n\ninterface improvements:\n*; cleaner and more consistent home page layout.\n*; cleaned up support section in \"about\". also includes a link to the status page.\n\ninternal improvements:\n*; urls, subdomains, and tlds are properly validated.\n*; minor clean up.\n\nchanges since 7.7:\n*; made terms and ethics more descriptive.\n*; fix only affected twitter videos.\n*; fixed quick ⌘+V pasting on mac.\n*; now catching even more youtube-related errors.\n\nthis might not seem like a lot, but even smaller changes make a difference!\n\nenjoy this update and the rest of your day :D"
-    },
-    "history": [{
+    }, {
         "version": "7.7",
         "date": "December 2, 2023",
         "title": "bugfixes and better downloads!",
         "banner": {
             "file": "meowthpolishegg.webp",
+            "alt": "meowth polishing a togepi egg",
             "width": 640,
             "height": 480
         },
@@ -26,6 +39,7 @@
         "title": "customizable file names, instagram stories, and first cobalt sponsor!",
         "banner": {
             "file": "meowthcenter.webp",
+            "alt": "meowth plush in a datacenter wearing a hardhat, wielding a hammer",
             "width": 851,
             "height": 640
         },
@@ -36,6 +50,7 @@
         "title": "support for twitch clips and rutube!",
         "banner": {
             "file": "twitchupdate.webp",
+            "alt": "meowth plush staring into the camera, laptop with generic purple service in the background",
             "width": 851,
             "height": 640
         },
@@ -46,6 +61,7 @@
         "title": "new domain, what's coming in future, bug fixes, and more!",
         "banner": {
             "file": "newdomain.webp",
+            "alt": "text: new domain, same cobalt",
             "width": 960,
             "height": 540
         },
@@ -56,6 +72,7 @@
         "title": "extended video length limit, metadata toggle, ui improvements, and more!",
         "banner": {
             "file": "meowthsnap.webp",
+            "alt": "cartoon meowth pointing paw dramatically and saying something",
             "width": 500,
             "height": 280
         },
@@ -66,6 +83,7 @@
         "title": "instagram, streamable, video metadata, and more!",
         "banner": {
             "file": "meowthproductions.webp",
+            "alt": "meowth roaring in a fancy circle, à la MGM studios intro",
             "width": 640,
             "height": 358
         },
@@ -76,6 +94,7 @@
         "title": "biggest ui refresh yet!",
         "banner": {
             "file": "meowthcooking.webp",
+            "alt": "meowth handling orders in a restaurant",
             "width": 640,
             "height": 360
         },
@@ -86,6 +105,7 @@
         "title": "all network issues have been fixed!",
         "banner": {
             "file": "meowthhammer.webp",
+            "alt": "meowth plush holding a hammer in real life",
             "width": 1280,
             "height": 827
         },
@@ -96,6 +116,7 @@
         "title": "better reliability, new infrastructure, pinterest support, and way more!",
         "banner": {
             "file": "catswitchboxes.webp",
+            "alt": "a cat climbing into two empty boxes of asahi beer",
             "width": 600,
             "height": 314
         },
@@ -105,6 +126,7 @@
         "title": "instagram support, docker, and more!",
         "banner": {
             "file": "catphonestand.webp",
+            "alt": "a cat holding a phone under its chin while a person plays clash of clans on it",
             "width": 451,
             "height": 272
         },
@@ -114,6 +136,7 @@
         "title": "better looks, better feel",
         "banner": {
             "file": "cattired.webp",
+            "alt": "a cat laying on a sofa face down, wiggling its tail",
             "width": 640,
             "height": 286
         },
@@ -123,6 +146,7 @@
         "title": "fastest one in the game",
         "banner": {
             "file": "catspeed.webp",
+            "alt": "a cat running very fast in an exercise wheel",
             "width": 640,
             "height": 356
         },
@@ -132,6 +156,7 @@
         "title": "the evil has been defeated",
         "banner": {
             "file": "happymeowth.webp",
+            "alt": "meowth jumping up into the sky very excitedly",
             "width": 500,
             "height": 330
         },
@@ -141,6 +166,7 @@
         "title": "it's all about attention to detail!",
         "banner": {
             "file": "valentines.webp",
+            "alt": "relaxed meowth with sakura petals falling in front of them",
             "width": 489,
             "height": 374
         },
@@ -150,6 +176,7 @@
         "title": "prettier than ever",
         "banner": {
             "file": "catmakeup.webp",
+            "alt": "a cat being brushed with a powder makeup brush",
             "width": 394,
             "height": 266
         },
@@ -159,6 +186,7 @@
         "title": "we're better together! thank you for bug reports.",
         "banner": {
             "file": "bettertogether.webp",
+            "alt": "various different pokémon jumping in happiness",
             "width": 640,
             "height": 358
         },
@@ -168,6 +196,7 @@
         "title": "mute videos and proper soundcloud support",
         "banner": {
             "file": "shutup.webp",
+            "alt": "a cat yawning, with a crossed out loudspeaker icon next to it",
             "width": 1024,
             "height": 665
         },
@@ -177,6 +206,7 @@
         "title": "better, faster, stronger, stable",
         "banner": {
             "file": "meowthstrong.webp",
+            "alt": "meowth stretching",
             "width": 500,
             "height": 280
         },
@@ -186,6 +216,7 @@
         "title": "over 1 million monthly requests. thank you.",
         "banner": {
             "file": "onemillionr.webp",
+            "alt": "cobalt logo and a confetti emoji",
             "width": 1441,
             "height": 1441
         },
@@ -199,6 +230,7 @@
         "title": "developers, developers, developers, developers",
         "banner": {
             "file": "developers.webp",
+            "alt": "steve ballmer going \"developers, developers, developers\"",
             "width": 640,
             "height": 360
         },

@@ -1,5 +1,5 @@
 {
-    "audioIgnore": ["vk"],
+    "audioIgnore": ["vk", "ok"],
     "config": {
         "bilibili": {
             "alias": "bilibili.com videos",
@@ -9,6 +9,7 @@
         "reddit": {
             "alias": "reddit videos & gifs",
             "patterns": ["r/:sub/comments/:id/:title"],
+            "subdomains": "*",
             "enabled": true
         },
         "twitter": {
@@ -28,6 +29,12 @@
             "patterns": ["video:userId_:videoId", "clip:userId_:videoId", "clips:duplicate?z=clip:userId_:videoId"],
             "enabled": true
         },
+        "ok": {
+            "alias": "ok video",
+            "tld": "ru",
+            "patterns": ["video/:id"],
+            "enabled": true
+        },
         "youtube": {
             "alias": "youtube videos, shorts & music",
             "patterns": ["watch?v=:id", "embed/:id", "watch/:id"],
@@ -42,7 +49,7 @@
         },
         "tiktok": {
             "alias": "tiktok videos, photos & audio",
-            "patterns": [":user/video/:postId", ":id", "t/:id"],
+            "patterns": [":user/video/:postId", ":id", "t/:id", ":user/photo/:postId"],
             "subdomains": ["vt", "vm"],
             "audioFormats": ["best", "m4a", "mp3"],
             "enabled": true
@@ -68,7 +75,7 @@
             "alias": "instagram reels, posts & stories",
             "patterns": [
                 "reels/:postId", "reel/:postId", "p/:postId",
-                "stories/:username/:storyId"
+                "tv/:postId", "stories/:username/:storyId"
             ],
             "enabled": true
         },
@@ -80,7 +87,7 @@
         },
         "pinterest": {
             "alias": "pinterest videos & stories",
-            "patterns": ["pin/:id"],
+            "patterns": ["pin/:id", "pin/:id/:garbage", "url_shortener/:shortLink"],
             "enabled": true
         },
         "streamable": {

@@ -3,7 +3,7 @@ import { apiJSON } from "../sub/utils.js";
 import loc from "../../localization/manager.js";
 import createFilename from "./createFilename.js";
 
-export default function(r, host, userFormat, isAudioOnly, lang, isAudioMuted, disableMetadata, filenamePattern) {
+export default function(r, host, userFormat, isAudioOnly, lang, isAudioMuted, disableMetadata, filenamePattern, toGif) {
     let action,
         responseType = 2,
         defaultParams = {
@@ -14,10 +14,11 @@ export default function(r, host, userFormat, isAudioOnly, lang, isAudioMuted, di
             fileMetadata: !disableMetadata ? r.fileMetadata : false
         },
         params = {},
-        audioFormat = String(userFormat)
+        audioFormat = String(userFormat);
 
     if (r.isPhoto) action = "photo";
     else if (r.picker) action = "picker"
+    else if (r.isGif && toGif) action = "gif";
     else if (isAudioMuted) action = "muteVideo";
     else if (isAudioOnly) action = "audio";
     else if (r.isM3U8) action = "singleM3U8";
@@ -38,6 +39,10 @@ export default function(r, host, userFormat, isAudioOnly, lang, isAudioMuted, di
 
         case "photo":
             responseType = 1;
+            break;
+        
+        case "gif":
+            params = { type: "gif" }
             break;
 
         case "singleM3U8":
